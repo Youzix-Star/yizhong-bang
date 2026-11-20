@@ -3,7 +3,7 @@ package com.yizhong.bang.data
 /** 把「导出 Excel」返回的 HTML 成绩单解析成 [Sheet]。逻辑与 Python 版一致。 */
 object SheetParser {
 
-    private const val I = RegexOption.IGNORE_CASE
+    private val I = RegexOption.IGNORE_CASE
 
     private val TABLE = Regex("<table\\b[^>]*>([\\s\\S]*?)</table>", I)
     private val TR = Regex("<tr\\b", I)

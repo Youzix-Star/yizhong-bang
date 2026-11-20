@@ -6,7 +6,7 @@ package com.yizhong.bang.data
  */
 internal object Html {
 
-    private const val I = RegexOption.IGNORE_CASE
+    private val I = RegexOption.IGNORE_CASE
 
     private val TAG = Regex("<[^>]*>")
     private val SPACES = Regex("\\s+")
