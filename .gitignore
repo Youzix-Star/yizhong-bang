@@ -1,0 +1,23 @@
+# Gradle
+.gradle/
+build/
+app/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Android Studio / IDEA
+.idea/
+*.iml
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
+# 构建产物
+*.apk
+*.aab
+*.ap_
+app/release/
+
+# 系统
+.DS_Store
+Thumbs.db

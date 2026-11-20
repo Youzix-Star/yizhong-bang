@@ -1,0 +1,21 @@
+一中帮
+Copyright (C) 2026 Youzix-Star
+
+本项目以 GPL-3.0 发布。
+
+第三方与参考：
+
+1. InstallerX Revived — https://github.com/wxxsfxyzm/InstallerX-Revived
+   License: GPL-3.0-only
+   OS4 玻璃界面的组件编排（顶栏 / 底部导航 / 采样层 / 下拉弹层）参考并改编自该项目，
+   因此本项目同样以 GPL-3.0 发布。
+
+2. Miuix — https://github.com/compose-miuix-ui/miuix
+   License: Apache-2.0
+   提供 Compose 组件、玻璃材质、模糊与运行时着色器。
+
+3. AndroidLiquidGlass（Kyant0） — https://github.com/Kyant0/AndroidLiquidGlass
+   License: Apache-2.0
+   本项目未直接沿用其代码；设计语言上有参考。
+
+4. HyperOS 4 / MIUI 的视觉语言仅作为设计参考，本项目与其无隶属关系。
