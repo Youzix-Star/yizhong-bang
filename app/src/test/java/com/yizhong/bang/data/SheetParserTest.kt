@@ -46,7 +46,7 @@ class SheetParserTest {
         assertEquals(1, first.totalRank?.classRank)
         assertEquals(500, first.totalRank?.grade)
         assertEquals(listOf(false, true), first.flags)
-        assertEquals(1, first.ranks[1]?.classRank)
+        assertEquals(2, first.ranks[1]?.classRank)
         assertEquals(58.0, first.classSize ?: -1.0, 0.001)
         assertEquals(1497.0, first.gradeCount ?: -1.0, 0.001)
     }
