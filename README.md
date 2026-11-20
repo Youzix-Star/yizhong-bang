@@ -1,5 +1,7 @@
 # 一中帮
 
+[![build](https://github.com/Youzix-Star/yizhong-bang/actions/workflows/build.yml/badge.svg)](https://github.com/Youzix-Star/yizhong-bang/actions/workflows/build.yml)
+
 城固一中「成绩查询分析系统」的安卓客户端：**OS4 玻璃风格**，只读，自己用。
 
 学校那套 ASP.NET WebForms 页面又长又难用，所以之前让 AI 做过一个网页版。
