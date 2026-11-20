@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.yizhong.bang"
-        minSdk = 26
+        minSdk = 33
         targetSdk = 37
         versionCode = (findProperty("versionCode") as String?)?.toIntOrNull() ?: 1
         versionName = findProperty("versionName") as String? ?: "1.0.0"
