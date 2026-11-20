@@ -69,7 +69,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if (_state.value.busy) return
         viewModelScope.launch {
             try {
-                val payload = DemoData.load(getApplication())
+                val payload = DemoData.load(getApplication<Application>())
                 _state.update {
                     it.copy(
                         phase = Phase.Main,
@@ -111,7 +111,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun loadSheet(force: Boolean = false) {
         val snapshot = _state.value
         if (snapshot.exam.isEmpty() || snapshot.clazz.isEmpty()) {
-            _state.update { it.copy(error = "这个年级暂时没有考试数据", sheet = null) }
+            _state.update { it.copy(error = "这个年级暂时没有考试数据", sheet = null, busy = false) }
             return
         }
         val id = ++requestId

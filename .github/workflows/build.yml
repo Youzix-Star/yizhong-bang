@@ -29,13 +29,29 @@ jobs:
           distribution: temurin
           java-version: '25'
 
-      - name: Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install SDK 37
+      - name: Android SDK 37.2
         run: |
-          yes | sdkmanager --licenses > /dev/null 2>&1 || true
-          sdkmanager --install "platforms;android-37.2" "build-tools;37.0.0" "platform-tools"
+          set -e
+          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          SM="$SDK/cmdline-tools/latest/bin/sdkmanager"
+          [ -x "$SM" ] || SM="$SDK/cmdline-tools/16.0/bin/sdkmanager"
+          install() {
+            yes | "$SM" --licenses > /dev/null 2>&1 || true
+            yes | "$SM" --install "platforms;android-37.2" "build-tools;37.0.0" "platform-tools"
+          }
+          if ! install; then
+            echo "::warning::preinstalled sdkmanager failed, downloading latest cmdline-tools"
+            curl -sSL -o /tmp/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-16111833_latest.zip
+            rm -rf /tmp/cmdline-tools "$SDK/cmdline-tools/latest"
+            mkdir -p /tmp/cmdline-tools
+            unzip -q /tmp/cmdline-tools.zip -d /tmp/cmdline-tools
+            mv /tmp/cmdline-tools/cmdline-tools "$SDK/cmdline-tools/latest"
+            SM="$SDK/cmdline-tools/latest/bin/sdkmanager"
+            install
+          fi
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+          ls "$SDK/platforms"
 
       - name: Gradle
         uses: gradle/actions/setup-gradle@v4
