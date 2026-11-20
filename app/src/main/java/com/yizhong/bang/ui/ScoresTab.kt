@@ -2,6 +2,7 @@ package com.yizhong.bang.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -189,9 +190,13 @@ private fun StudentCard(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = 18.dp,
         insideMargin = PaddingValues(14.dp),
-        onClick = onToggle,
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onToggle() },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Box(
                 modifier = Modifier
                     .size(34.dp)
