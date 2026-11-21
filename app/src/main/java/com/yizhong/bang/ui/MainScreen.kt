@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yizhong.bang.MainViewModel
 import com.yizhong.bang.UiState
+import com.yizhong.bang.data.Student
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.LinearProgressIndicator
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
@@ -35,15 +36,19 @@ import top.yukonga.miuix.kmp.icon.glass.SettingsFill
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 @Composable
-fun MainScreen(state: UiState, viewModel: MainViewModel, scope: MiuixComponentScope) {
+fun MainScreen(
+    state: UiState,
+    viewModel: MainViewModel,
+    scope: MiuixComponentScope,
+    isTop: Boolean,
+    onOpenAbout: () -> Unit,
+    onOpenAnswerSheet: (Student, Int) -> Unit,
+) {
     var tab by remember { mutableIntStateOf(0) }
-    var about by remember { mutableStateOf(false) }
-    var licenses by remember { mutableStateOf(false) }
     val colors = MiuixTheme.colorScheme
-    val answer by viewModel.answer.collectAsStateWithLifecycle()
     val scrollBehavior = MiuixScrollBehavior()
 
-    BackHandler(enabled = answer.target == null && tab != 0) { tab = 0 }
+    BackHandler(enabled = isTop && tab != 0) { tab = 0 }
 
     val navItems = listOf(
         YzNavItem(MiuixIcons.Glass.HomeFill, "总览"),
@@ -115,33 +120,15 @@ fun MainScreen(state: UiState, viewModel: MainViewModel, scope: MiuixComponentSc
             ) {
                 when (tab) {
                     0 -> OverviewTab(state, viewModel)
-                    1 -> ScoresTab(state, viewModel, onAnswerSheet = { student, index -> viewModel.openAnswerSheet(student, index) })
+                    1 -> ScoresTab(state, viewModel, onAnswerSheet = onOpenAnswerSheet)
                     else -> SettingsTab(
                         state = state,
                         viewModel = viewModel,
-                        onOpenAbout = { about = true },
+                        onOpenAbout = onOpenAbout,
                     )
                 }
             }
         }
-    }
-    if (answer.target != null) {
-        AnswerSheetScreen(
-            state = answer,
-            subjects = state.sheet?.subjects.orEmpty(),
-            onSelectSubject = viewModel::switchAnswerSubject,
-            onClose = viewModel::closeAnswerSheet,
-            onRetry = viewModel::retryAnswerSheet,
-        )
-    }
-    if (about && answer.target == null) {
-        AboutScreen(
-            onClose = { about = false },
-            onOpenLicenses = { licenses = true },
-        )
-    }
-    if (licenses) {
-        LicenseScreen(onClose = { licenses = false })
     }
     }
 }

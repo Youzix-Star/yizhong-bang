@@ -17,8 +17,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.yizhong.bang.ui.AuroraBackground
+import com.yizhong.bang.ui.AppNavHost
 import com.yizhong.bang.ui.GateScreen
-import com.yizhong.bang.ui.MainScreen
 import com.yizhong.bang.ui.MiuixHost
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import com.yizhong.bang.ui.YzTheme
@@ -76,7 +76,7 @@ class MainActivity : ComponentActivity() {
                         }
                         when (state.phase) {
                             Phase.Gate -> GateScreen(state, viewModel)
-                            Phase.Main -> MainScreen(state, viewModel, scope)
+                            Phase.Main -> AppNavHost(state, viewModel, scope)
                         }
                     }
                 }

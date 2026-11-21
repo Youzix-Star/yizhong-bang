@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.miuix.glass.icons)
     implementation(libs.miuix.icons)
     implementation(libs.miuix.preference)
+    implementation(libs.miuix.nav)
 
     implementation(libs.okhttp)
     implementation(libs.kotlinx.serialization.json)
