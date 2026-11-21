@@ -502,7 +502,10 @@ private fun PagePill(
         insideMargin = PaddingValues(horizontal = 2.dp),
         colors = CardDefaults.defaultColors(color = colors.surfaceContainerHigh),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             IconButton(
                 onClick = onPrev,
                 enabled = current > 0,
@@ -558,6 +561,7 @@ private fun AnswerBottomBar(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(
@@ -597,11 +601,13 @@ private fun AnswerBottomBar(
                 )
             }
             Spacer(Modifier.weight(1f))
+            val saveTextStyle = MiuixTheme.textStyles.button.copy(fontSize = 13.sp)
             TextButton(
                 text = "保存本页",
                 onClick = onSaveCurrent,
                 enabled = !saving,
                 insideMargin = PaddingValues(horizontal = 6.dp),
+                textStyle = saveTextStyle,
             )
             Button(
                 onClick = onSaveAll,
@@ -623,7 +629,7 @@ private fun AnswerBottomBar(
                         loading -> "保存已加载"
                         else -> "保存全部"
                     },
-                    fontSize = 13.sp,
+                    style = saveTextStyle,
                 )
             }
         }

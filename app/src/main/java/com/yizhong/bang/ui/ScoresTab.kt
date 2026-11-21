@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,12 +24,15 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -44,7 +48,6 @@ import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.Text
-import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.Clear
 import top.yukonga.miuix.kmp.icon.extended.Search
@@ -127,40 +130,57 @@ fun ScoresTab(
 @Composable
 private fun SearchField(query: String, onQueryChange: (String) -> Unit) {
     val colors = MiuixTheme.colorScheme
-    TextField(
-        value = query,
-        onValueChange = onQueryChange,
-        modifier = Modifier.fillMaxWidth(),
-        label = "筛选姓名或考号",
-        useLabelAsPlaceholder = true,
-        singleLine = true,
-        leadingIcon = {
-            Icon(
-                imageVector = MiuixIcons.Search,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = colors.onSurfaceVariantSummary,
-            )
-        },
-        trailingIcon = if (query.isNotEmpty()) {
-            {
-                IconButton(
-                    onClick = { onQueryChange("") },
-                    modifier = Modifier.size(32.dp),
-                ) {
-                    Icon(
-                        imageVector = MiuixIcons.Clear,
-                        contentDescription = "清空",
-                        modifier = Modifier.size(18.dp),
-                        tint = colors.onSurfaceVariantSummary,
-                    )
-                }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(colors.surfaceContainerHigh)
+            .padding(horizontal = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = MiuixIcons.Search,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            tint = colors.onSurfaceVariantSummary,
+        )
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 10.dp, vertical = 14.dp),
+            contentAlignment = Alignment.CenterStart,
+        ) {
+            if (query.isEmpty()) {
+                Text(
+                    text = "筛选姓名或考号",
+                    fontSize = 13.5.sp,
+                    color = colors.onSurfaceVariantSummary,
+                )
             }
-        } else {
-            null
-        },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-    )
+            BasicTextField(
+                value = query,
+                onValueChange = onQueryChange,
+                singleLine = true,
+                textStyle = TextStyle(fontSize = 13.5.sp, color = colors.onSurface),
+                cursorBrush = SolidColor(colors.primary),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+        if (query.isNotEmpty()) {
+            IconButton(
+                onClick = { onQueryChange("") },
+                modifier = Modifier.size(32.dp),
+            ) {
+                Icon(
+                    imageVector = MiuixIcons.Clear,
+                    contentDescription = "清空",
+                    modifier = Modifier.size(18.dp),
+                    tint = colors.onSurfaceVariantSummary,
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -183,6 +203,7 @@ private fun StudentCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .heightIn(min = 56.dp)
                 .clickable { onToggle() },
             verticalAlignment = Alignment.CenterVertically,
         ) {

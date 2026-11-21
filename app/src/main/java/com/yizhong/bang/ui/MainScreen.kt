@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -34,11 +35,13 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 @Composable
 fun MainScreen(state: UiState, viewModel: MainViewModel, scope: MiuixComponentScope) {
     var tab by remember { mutableIntStateOf(0) }
+    var about by remember { mutableStateOf(false) }
     val colors = MiuixTheme.colorScheme
     val answer by viewModel.answer.collectAsStateWithLifecycle()
 
     BackHandler(enabled = answer.target == null && tab != 0) { tab = 0 }
     BackHandler(enabled = answer.target != null) { viewModel.closeAnswerSheet() }
+    BackHandler(enabled = answer.target == null && about) { about = false }
 
     val navItems = listOf(
         YzNavItem(MiuixIcons.Glass.HomeFill, "总览"),
@@ -106,7 +109,11 @@ fun MainScreen(state: UiState, viewModel: MainViewModel, scope: MiuixComponentSc
                 when (tab) {
                     0 -> OverviewTab(state, viewModel)
                     1 -> ScoresTab(state, viewModel, onAnswerSheet = { student, index -> viewModel.openAnswerSheet(student, index) })
-                    else -> SettingsTab(state, viewModel)
+                    else -> SettingsTab(
+                        state = state,
+                        viewModel = viewModel,
+                        onOpenAbout = { about = true },
+                    )
                 }
             }
         }
@@ -119,6 +126,9 @@ fun MainScreen(state: UiState, viewModel: MainViewModel, scope: MiuixComponentSc
             onClose = viewModel::closeAnswerSheet,
             onRetry = viewModel::retryAnswerSheet,
         )
+    }
+    if (about && answer.target == null) {
+        AboutScreen(onClose = { about = false })
     }
     }
 }

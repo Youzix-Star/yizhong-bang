@@ -5,14 +5,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yizhong.bang.BuildConfig
 import com.yizhong.bang.MainViewModel
@@ -21,12 +20,18 @@ import com.yizhong.bang.data.AppTheme
 import top.yukonga.miuix.kmp.basic.BasicComponent
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.DropdownItem
+import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.Switch
-import top.yukonga.miuix.kmp.basic.Text
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.extended.ChevronForward
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 @Composable
-fun SettingsTab(state: UiState, viewModel: MainViewModel) {
+fun SettingsTab(
+    state: UiState,
+    viewModel: MainViewModel,
+    onOpenAbout: () -> Unit,
+) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val colors = MiuixTheme.colorScheme
 
@@ -34,7 +39,7 @@ fun SettingsTab(state: UiState, viewModel: MainViewModel) {
         state = rememberLazyListState(),
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 112.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         item { SectionTitle("外观") }
         item {
@@ -62,9 +67,9 @@ fun SettingsTab(state: UiState, viewModel: MainViewModel) {
                 SettingSwitch(
                     title = "动态取色",
                     summary = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        "跟随壁纸的主色，Android 12 及以上"
+                        "跟随壁纸主色"
                     } else {
-                        "需要 Android 12 及以上"
+                        "需要 Android 12"
                     },
                     checked = settings.dynamicColor,
                     enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
@@ -72,7 +77,7 @@ fun SettingsTab(state: UiState, viewModel: MainViewModel) {
                 )
                 SettingSwitch(
                     title = "纯黑背景",
-                    summary = "只在深色模式生效，OLED 更省电",
+                    summary = "深色模式下生效",
                     checked = settings.amoled,
                     onCheckedChange = viewModel::setAmoled,
                 )
@@ -87,16 +92,8 @@ fun SettingsTab(state: UiState, viewModel: MainViewModel) {
                 insideMargin = PaddingValues(vertical = 4.dp),
             ) {
                 BasicComponent(
-                    title = "数据源",
-                    summary = "学校成绩系统 · 只读",
-                )
-                BasicComponent(
-                    title = "缓存",
-                    summary = "本次会话内一直保留，点右上角刷新才更新",
-                )
-                BasicComponent(
                     title = "退出登录",
-                    summary = "清掉这次会话，重新粘链接",
+                    summary = "清除会话并返回登录",
                     onClick = viewModel::logout,
                 )
             }
@@ -110,24 +107,20 @@ fun SettingsTab(state: UiState, viewModel: MainViewModel) {
                 insideMargin = PaddingValues(vertical = 4.dp),
             ) {
                 BasicComponent(
-                    title = "试卷分析链接",
-                    summary = if (state.answerBound) "已随登录自动绑定，可以查看答卷图片" else "未绑定（请换用「成绩分析」链接登录）",
-                )
-                BasicComponent(
-                    title = "图片保存",
-                    summary = "答题卡查看后保存到相册 / Pictures/一中帮",
+                    title = "连接状态",
+                    summary = if (state.answerBound) "已绑定" else "未绑定",
                 )
                 val answerError = state.answerError
                 if (!answerError.isNullOrBlank()) {
                     BasicComponent(
-                        title = "上次绑定失败",
+                        title = "上次错误",
                         summary = answerError,
                     )
                 }
             }
         }
 
-        item { SectionTitle("关于") }
+        item { SectionTitle("其他") }
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -135,45 +128,19 @@ fun SettingsTab(state: UiState, viewModel: MainViewModel) {
                 insideMargin = PaddingValues(vertical = 4.dp),
             ) {
                 BasicComponent(
-                    title = "版本",
+                    title = "关于一中帮",
                     summary = "v${BuildConfig.VERSION_NAME}",
-                )
-                BasicComponent(
-                    title = "设计参考",
-                    summary = "HyperOS 4 · Miuix · InstallerX Revived",
-                )
-                BasicComponent(
-                    title = "隐私",
-                    summary = "成绩只在本机内存里，token 不写日志、不落盘",
+                    onClick = onOpenAbout,
+                    endActions = {
+                        Icon(
+                            imageVector = MiuixIcons.ChevronForward,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = colors.onSurfaceVariantSummary,
+                        )
+                    },
                 )
             }
-        }
-
-        if (state.demo) {
-            item {
-                SectionCard {
-                    Text(
-                        text = "示例模式",
-                        fontSize = 13.sp,
-                        color = colors.primary,
-                    )
-                    Text(
-                        text = "这 58 名学生的姓名已经换成「学生01」这种占位符，不会访问学校服务器。",
-                        fontSize = 11.5.sp,
-                        color = colors.onSurfaceVariantSummary,
-                        modifier = Modifier.padding(top = 3.dp),
-                    )
-                }
-            }
-        }
-
-        item {
-            Text(
-                text = "一中帮 · 给自己看的成绩单",
-                fontSize = 11.sp,
-                color = colors.onSurfaceVariantSummary,
-                modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp),
-            )
         }
     }
 }
