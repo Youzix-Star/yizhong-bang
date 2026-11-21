@@ -151,7 +151,13 @@ fun AnswerSheetScreen(
         val snapshot = listOf(pages[index])
         saving = true
         scope.launch {
-            val count = savePages(context, snapshot, target, index)
+            val count = try {
+                savePages(context, snapshot, target, index)
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                0
+            }
             saving = false
             snackbar.showSnackbar(
                 message = if (count > 0) {
@@ -168,7 +174,13 @@ fun AnswerSheetScreen(
         val snapshot = pages.toList()
         saving = true
         scope.launch {
-            val count = savePages(context, snapshot, target, 0)
+            val count = try {
+                savePages(context, snapshot, target, 0)
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                0
+            }
             saving = false
             snackbar.showSnackbar(
                 message = if (count > 0) {
