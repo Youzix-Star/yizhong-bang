@@ -1,18 +1,27 @@
 package com.yizhong.bang.ui
 
 import android.os.Build
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import top.yukonga.miuix.kmp.basic.DropdownItem
 import top.yukonga.miuix.kmp.basic.Icon
@@ -22,14 +31,21 @@ import top.yukonga.miuix.kmp.basic.NavigationBarItem
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.TopAppBar
+import top.yukonga.miuix.kmp.basic.TopAppBarDefaults
+import top.yukonga.miuix.kmp.blur.BlendColorEntry
+import top.yukonga.miuix.kmp.blur.BlurColors
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
+import top.yukonga.miuix.kmp.blur.ProgressiveBlur
 import top.yukonga.miuix.kmp.blur.layerBackdrop
+import top.yukonga.miuix.kmp.blur.progressiveTextureBlur
+import top.yukonga.miuix.kmp.blur.rememberLayerBackdrop
 import top.yukonga.miuix.kmp.glass.GlassDropdownPreference
 import top.yukonga.miuix.kmp.glass.GlassIconButton
 import top.yukonga.miuix.kmp.glass.GlassNavigationBar
 import top.yukonga.miuix.kmp.glass.GlassNavigationItem
 import top.yukonga.miuix.kmp.glass.GlassPopupDefaults
 import top.yukonga.miuix.kmp.glass.GlassTopAppBar
+import top.yukonga.miuix.kmp.glass.GlassTopAppBarDefaults
 import top.yukonga.miuix.kmp.material.GlassDefaults
 import top.yukonga.miuix.kmp.material.isRenderEffectSupported
 import top.yukonga.miuix.kmp.preference.WindowSpinnerPreference
@@ -90,17 +106,37 @@ fun YzTopAppBar(
     scrollBehavior: ScrollBehavior? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
+    val hasContentScroll by remember(scrollBehavior) {
+        derivedStateOf { (scrollBehavior?.state?.contentOffset ?: 0f) < 0f }
+    }
     if (useOs4) {
-        GlassTopAppBar(
-            title = title,
-            largeTitle = title,
-            subtitle = subtitle,
-            backdrop = backdrop,
-            progressiveBlur = backdrop != null,
-            scrollBehavior = scrollBehavior,
-            style = GlassDefaults.style(YzTheme.isDark),
-            actions = actions,
-        )
+        if (backdrop != null) {
+            YzProgressiveAppBarSurface(backdrop = backdrop) {
+                GlassTopAppBar(
+                    title = title,
+                    isContentScrolled = hasContentScroll,
+                    largeTitle = title,
+                    subtitle = subtitle,
+                    backdrop = backdrop,
+                    style = GlassDefaults.style(YzTheme.isDark),
+                    scrollBehavior = scrollBehavior,
+                    backgroundAlpha = { 0f },
+                    actions = actions,
+                )
+            }
+        } else {
+            GlassTopAppBar(
+                title = title,
+                isContentScrolled = hasContentScroll,
+                largeTitle = title,
+                subtitle = subtitle,
+                backdrop = null,
+                progressiveBlur = true,
+                style = GlassDefaults.style(YzTheme.isDark),
+                scrollBehavior = scrollBehavior,
+                actions = actions,
+            )
+        }
     } else {
         TopAppBar(
             title = title,
@@ -110,6 +146,54 @@ fun YzTopAppBar(
             color = MiuixTheme.colorScheme.surface,
             actions = actions,
         )
+    }
+}
+
+@Composable
+private fun YzProgressiveAppBarSurface(
+    backdrop: LayerBackdrop,
+    content: @Composable () -> Unit,
+) {
+    val renderedBackdrop = rememberLayerBackdrop()
+    val density = LocalDensity.current
+    val topInsetPx = with(density) {
+        WindowInsets.statusBars.asPaddingValues().calculateTopPadding().toPx()
+    }
+    val blurColors = BlurColors(
+        blendColors = listOf(
+            BlendColorEntry(MiuixTheme.colorScheme.surface.copy(alpha = 0.3f)),
+        ),
+    )
+    Box {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .layout { measurable, constraints ->
+                    val bandHeight = (
+                        topInsetPx +
+                            TopAppBarDefaults.CollapsedHeight.toPx() +
+                            20.dp.toPx()
+                        ) * 1.2f
+                    val placeable = measurable.measure(
+                        constraints.copy(
+                            minHeight = bandHeight.toInt(),
+                            maxHeight = bandHeight.toInt(),
+                        ),
+                    )
+                    layout(constraints.maxWidth, constraints.maxHeight) {
+                        placeable.placeRelative(0, 0)
+                    }
+                }
+                .layerBackdrop(renderedBackdrop)
+                .progressiveTextureBlur(
+                    backdrop = backdrop,
+                    shape = RectangleShape,
+                    gradient = ProgressiveBlur.Top.copy(curve = 0.5f),
+                    blurRadius = GlassTopAppBarDefaults.ProgressiveBlurRadius.value,
+                    colors = blurColors,
+                ),
+        )
+        content()
     }
 }
 

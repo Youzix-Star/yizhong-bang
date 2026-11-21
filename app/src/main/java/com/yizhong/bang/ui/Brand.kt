@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -66,33 +65,6 @@ fun LogoMark(size: Dp = 48.dp) {
         bar(0.24f, 0.60f, 0.16f, 0.82f)
         bar(0.445f, 0.51f, 0.25f, 0.92f)
         bar(0.65f, 0.42f, 0.34f, 1f)
-    }
-}
-
-@Composable
-fun AuroraBackground() {
-    val background = MiuixTheme.colorScheme.background
-    val surface = MiuixTheme.colorScheme.surface
-    val primary = MiuixTheme.colorScheme.primary
-    val secondary = MiuixTheme.colorScheme.secondary
-
-    Canvas(modifier = Modifier.fillMaxSize()) {
-        drawRect(Brush.verticalGradient(listOf(background, surface)))
-        drawCircle(
-            color = primary.copy(alpha = 0.13f),
-            radius = size.minDimension * 0.82f,
-            center = Offset(size.width * 0.05f, size.height * 0.08f),
-        )
-        drawCircle(
-            color = secondary.copy(alpha = 0.10f),
-            radius = size.minDimension * 0.62f,
-            center = Offset(size.width * 1.02f, size.height * 0.42f),
-        )
-        drawCircle(
-            color = primary.copy(alpha = 0.06f),
-            radius = size.minDimension * 0.7f,
-            center = Offset(size.width * 0.7f, size.height * 1.05f),
-        )
     }
 }
 

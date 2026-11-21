@@ -335,7 +335,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setTheme(theme: AppTheme) = settingsStore.setTheme(theme)
     fun setDynamicColor(enabled: Boolean) = settingsStore.setDynamicColor(enabled)
     fun setAmoled(enabled: Boolean) = settingsStore.setAmoled(enabled)
-    fun setWhiteBackground(enabled: Boolean) = settingsStore.setWhiteBackground(enabled)
 
     private fun friendly(e: Exception): String {
         val text = e.message ?: return "网络不太顺，稍后重试"

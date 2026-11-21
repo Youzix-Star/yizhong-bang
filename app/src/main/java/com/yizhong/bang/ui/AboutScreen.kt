@@ -72,8 +72,11 @@ fun AboutScreen(
     )
 
     PredictiveBackContainer(onBack = onClose) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            AuroraBackground()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colors.background),
+        ) {
             BgEffectBackground(
                 dynamicBackground = true,
                 modifier = Modifier.fillMaxSize(),

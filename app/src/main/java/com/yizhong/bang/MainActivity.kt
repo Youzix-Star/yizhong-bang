@@ -16,7 +16,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.yizhong.bang.ui.AuroraBackground
 import com.yizhong.bang.ui.AppNavHost
 import com.yizhong.bang.ui.GateScreen
 import com.yizhong.bang.ui.MiuixHost
@@ -65,15 +64,11 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .then(scope.pageBackdropModifier),
                     ) {
-                        if (settings.whiteBackground) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(MiuixTheme.colorScheme.background),
-                            )
-                        } else {
-                            AuroraBackground()
-                        }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(MiuixTheme.colorScheme.background),
+                        )
                         when (state.phase) {
                             Phase.Gate -> GateScreen(state, viewModel)
                             Phase.Main -> AppNavHost(state, viewModel, scope)

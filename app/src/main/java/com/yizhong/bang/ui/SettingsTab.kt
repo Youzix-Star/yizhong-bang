@@ -66,12 +66,6 @@ fun SettingsTab(
                     },
                 )
                 SwitchPreference(
-                    title = "纯白背景",
-                    summary = "去掉背景光斑，只保留纯色",
-                    checked = settings.whiteBackground,
-                    onCheckedChange = viewModel::setWhiteBackground,
-                )
-                SwitchPreference(
                     title = "动态取色",
                     summary = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         "跟随壁纸主色"
