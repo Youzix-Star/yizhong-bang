@@ -97,10 +97,7 @@ fun AppNavHost(state: UiState, viewModel: MainViewModel, scope: MiuixComponentSc
                 state = viewModel.answer.collectAsStateWithLifecycle().value,
                 subjects = state.sheet?.subjects.orEmpty(),
                 onSelectSubject = viewModel::switchAnswerSubject,
-                onClose = {
-                    viewModel.closeAnswerSheet()
-                    backStack.removeLastOrNull()
-                },
+                onClose = { backStack.removeLastOrNull() },
                 onRetry = viewModel::retryAnswerSheet,
             )
         }
