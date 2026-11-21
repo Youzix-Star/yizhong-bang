@@ -9,6 +9,11 @@ import kotlinx.coroutines.withContext
  * 会话内缓存：取过一次就一直留着，只有点刷新（force = true）才重新请求。
  * 终端是 App，不是网页，没必要按分钟过期。会话本身仍只活在进程里，不落盘。
  */
+data class OpenedSession(
+    val user: String?,
+    val answerSheetUrl: String?,
+)
+
 class GradeRepository {
 
     private val mutex = Mutex()
@@ -17,15 +22,16 @@ class GradeRepository {
     private var metaCache: Meta? = null
     private val sheetCache = mutableMapOf<String, Sheet>()
 
-    suspend fun open(url: String): String? = withContext(Dispatchers.IO) {
+    suspend fun open(url: String): OpenedSession = withContext(Dispatchers.IO) {
         val fresh = SchoolClient()
         val user = fresh.openLink(url)
+        val answerSheetUrl = fresh.answerSheetUrl
         mutex.withLock {
             client = fresh
             metaCache = null
             sheetCache.clear()
         }
-        user
+        OpenedSession(user, answerSheetUrl)
     }
 
     suspend fun meta(force: Boolean = false): Meta = withContext(Dispatchers.IO) {

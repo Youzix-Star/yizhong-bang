@@ -48,6 +48,10 @@ class SchoolClient(
     var user: String? = null
         private set
 
+    /** 成绩页菜单里自带的「试卷分析」入口（含 token），可能为 null。 */
+    var answerSheetUrl: String? = null
+        private set
+
     /**
      * 打开任意一个模块链接，自己找到「成绩查询」入口。
      * 返回解析到的人名（没有也不影响后续取数）。
@@ -59,7 +63,9 @@ class SchoolClient(
         val path = pathAndQuery(uri)
         if (path.isBlank() || path == "?") throw IllegalArgumentException("链接里没有路径")
 
+        answerSheetUrl = null
         val landing = get(path)
+        answerSheetUrl = extractAnswerSheetUrl(landing)
         val landingUser = parseUser(landing)
         if (clean.contains("SysCode=0401") || (uri.rawPath ?: "").contains("/SSQ/")) {
             user = landingUser
@@ -71,7 +77,9 @@ class SchoolClient(
             ?: throw IllegalStateException("这个链接不是成绩系统，页面上也找不到「成绩查询」入口")
         val fixed = link.replace("&amp;", "&").replace(Regex("\\s+"), "")
         val entry = runCatching { URI(fixed) }.getOrElse { throw IllegalStateException("成绩入口链接解析失败") }
-        user = parseUser(get(pathAndQuery(entry))) ?: landingUser
+        val entryPage = get(pathAndQuery(entry))
+        if (answerSheetUrl == null) answerSheetUrl = extractAnswerSheetUrl(entryPage)
+        user = parseUser(entryPage) ?: landingUser
         return user
     }
 
@@ -121,6 +129,12 @@ class SchoolClient(
     }
 
     fun getText(path: String): String = get(path)
+
+    private fun extractAnswerSheetUrl(html: String): String? =
+        Regex("href=\"([^\"]*/TPTQ/Default\\.aspx\\?[^\"]*token=[^\"]*)\"", RegexOption.IGNORE_CASE)
+            .find(html)?.groupValues?.get(1)
+            ?.replace("&amp;", "&")
+            ?.replace(Regex("\\s+"), "")
 
     fun getBytes(path: String): ByteArray {
         val request = Request.Builder().url(base + path).header(USER_AGENT, UA).get().build()

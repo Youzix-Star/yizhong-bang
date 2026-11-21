@@ -46,7 +46,6 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 @Composable
 fun GateScreen(state: UiState, viewModel: MainViewModel) {
     var scoreUrl by remember { mutableStateOf("") }
-    var answerUrl by remember { mutableStateOf("") }
     val colors = MiuixTheme.colorScheme
 
     Box(
@@ -85,8 +84,8 @@ fun GateScreen(state: UiState, viewModel: MainViewModel) {
                 }
 
                 Text(
-                    text = "第一条是成绩查询链接；第二条是试卷分析链接（选填，用来看答题卡）。" +
-                        "token 只留在内存里，不写日志、不落盘。",
+                    text = "粘「成绩分析」那条链接就行；App 会自动从页面菜单里找到「试卷分析」入口，" +
+                        "答题卡也能一起用。token 只留在内存里，不写日志、不落盘。",
                     fontSize = 13.sp,
                     lineHeight = 20.sp,
                     color = colors.onSurfaceVariantSummary,
@@ -96,7 +95,7 @@ fun GateScreen(state: UiState, viewModel: MainViewModel) {
                 Spacer(Modifier.height(16.dp))
 
                 Text(
-                    text = "成绩链接",
+                    text = "成绩分析链接",
                     fontSize = 11.sp,
                     color = colors.onSurfaceVariantSummary,
                     modifier = Modifier.padding(bottom = 4.dp),
@@ -104,27 +103,14 @@ fun GateScreen(state: UiState, viewModel: MainViewModel) {
                 LinkField(
                     value = scoreUrl,
                     onValueChange = { scoreUrl = it },
-                    placeholder = "http://…/GAS/Default.aspx?UserID=…&token=…",
-                    onSubmit = { if (!state.busy) viewModel.submitLink(scoreUrl, answerUrl) },
-                )
-
-                Text(
-                    text = "答题卡链接（选填）",
-                    fontSize = 11.sp,
-                    color = colors.onSurfaceVariantSummary,
-                    modifier = Modifier.padding(top = 10.dp, bottom = 4.dp),
-                )
-                LinkField(
-                    value = answerUrl,
-                    onValueChange = { answerUrl = it },
-                    placeholder = "http://…/TPTQ/Default.aspx?UserID=…&SysCode=0402&token=…",
-                    onSubmit = { if (!state.busy) viewModel.submitLink(scoreUrl, answerUrl) },
+                    placeholder = "http://…/GAS/Default.aspx?UserID=…&SysCode=0403&token=…",
+                    onSubmit = { if (!state.busy) viewModel.submitLink(scoreUrl) },
                 )
 
                 Spacer(Modifier.height(12.dp))
 
                 Button(
-                    onClick = { viewModel.submitLink(scoreUrl, answerUrl) },
+                    onClick = { viewModel.submitLink(scoreUrl) },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !state.busy,
                 ) {

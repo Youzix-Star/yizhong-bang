@@ -111,7 +111,7 @@ fun SettingsTab(state: UiState, viewModel: MainViewModel) {
             ) {
                 BasicComponent(
                     title = "试卷分析链接",
-                    summary = if (state.answerBound) "已绑定，可以查看答卷图片" else "未绑定（在登录页粘贴试卷分析链接）",
+                    summary = if (state.answerBound) "已随登录自动绑定，可以查看答卷图片" else "未绑定（请换用「成绩分析」链接登录）",
                 )
                 BasicComponent(
                     title = "图片保存",

@@ -70,7 +70,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var answerRequestId = 0
 
     // ── 入口 ─────────────────────────────────────────────
-    fun submitLink(url: String, answerUrl: String = "") {
+    fun submitLink(url: String) {
         if (_state.value.busy) return
         if (url.isBlank()) {
             _state.update { it.copy(gateError = "先把成绩链接粘进来") }
@@ -79,19 +79,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _state.update { it.copy(busy = true, gateError = null) }
         viewModelScope.launch {
             try {
-                repo.open(url)
+                val session = repo.open(url)
                 val meta = repo.meta()
 
                 answerRepo.reset()
                 var answerBound = false
                 var answerError: String? = null
-                if (answerUrl.isNotBlank()) {
+                val answerSheetUrl = session.answerSheetUrl
+                if (answerSheetUrl != null) {
                     try {
-                        answerRepo.bind(answerUrl)
+                        answerRepo.bind(answerSheetUrl)
                         answerBound = true
                     } catch (e: Exception) {
                         answerError = friendly(e)
                     }
+                } else {
+                    answerError = "成绩页里没有找到「试卷分析」入口，请换成「成绩分析」那条链接"
                 }
 
                 _state.update {
