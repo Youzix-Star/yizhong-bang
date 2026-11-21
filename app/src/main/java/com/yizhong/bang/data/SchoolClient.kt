@@ -110,6 +110,26 @@ class SchoolClient(
 
     fun reset() = cookieJar.clear()
 
+    /** 绑定另一个模块（如试卷分析）的入口链接，只负责拿 cookie 和 UserID。 */
+    fun bindModule(rawUrl: String): String? {
+        val clean = rawUrl.replace(Regex("\\s+"), "").substringBefore("#")
+        if (clean.isEmpty()) throw IllegalArgumentException("先把链接粘进来")
+        val uri = runCatching { URI(clean) }.getOrElse { throw IllegalArgumentException("链接格式不太对") }
+        get(pathAndQuery(uri))
+        return Regex("[?&]UserID=(\\d+)", RegexOption.IGNORE_CASE)
+            .find(clean)?.groupValues?.get(1)
+    }
+
+    fun getText(path: String): String = get(path)
+
+    fun getBytes(path: String): ByteArray {
+        val request = Request.Builder().url(base + path).header(USER_AGENT, UA).get().build()
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) throw IOException("上游返回 ${response.code}")
+            return response.body?.bytes() ?: ByteArray(0)
+        }
+    }
+
     // ── 网络 ─────────────────────────────────────────────
     private fun get(path: String): String =
         execute(Request.Builder().url(base + path).header(USER_AGENT, UA).get().build())

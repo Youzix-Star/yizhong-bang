@@ -102,6 +102,31 @@ fun SettingsTab(state: UiState, viewModel: MainViewModel) {
             }
         }
 
+        item { SectionTitle("答题卡") }
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                cornerRadius = 20.dp,
+                insideMargin = PaddingValues(vertical = 4.dp),
+            ) {
+                BasicComponent(
+                    title = "试卷分析链接",
+                    summary = if (state.answerBound) "已绑定，可以查看答卷图片" else "未绑定（在登录页粘贴试卷分析链接）",
+                )
+                BasicComponent(
+                    title = "图片保存",
+                    summary = "答题卡查看后保存到相册 / Pictures/一中帮",
+                )
+                val answerError = state.answerError
+                if (!answerError.isNullOrBlank()) {
+                    BasicComponent(
+                        title = "上次绑定失败",
+                        summary = answerError,
+                    )
+                }
+            }
+        }
+
         item { SectionTitle("关于") }
         item {
             Card(

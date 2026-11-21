@@ -45,7 +45,8 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 @Composable
 fun GateScreen(state: UiState, viewModel: MainViewModel) {
-    var url by rememberSaveable { mutableStateOf("") }
+    var scoreUrl by rememberSaveable { mutableStateOf("") }
+    var answerUrl by rememberSaveable { mutableStateOf("") }
     val colors = MiuixTheme.colorScheme
 
     Box(
@@ -84,8 +85,8 @@ fun GateScreen(state: UiState, viewModel: MainViewModel) {
                 }
 
                 Text(
-                    text = "把地址栏里那条又长又丑的链接整个粘进来，一次就够。" +
-                        "链接里的 token 就是登录凭证，只留在内存里，不写日志、不落盘。",
+                    text = "第一条是成绩查询链接；第二条是试卷分析链接（选填，用来看答题卡）。" +
+                        "token 只留在内存里，不写日志、不落盘。",
                     fontSize = 13.sp,
                     lineHeight = 20.sp,
                     color = colors.onSurfaceVariantSummary,
@@ -94,16 +95,36 @@ fun GateScreen(state: UiState, viewModel: MainViewModel) {
 
                 Spacer(Modifier.height(16.dp))
 
+                Text(
+                    text = "成绩链接",
+                    fontSize = 11.sp,
+                    color = colors.onSurfaceVariantSummary,
+                    modifier = Modifier.padding(bottom = 4.dp),
+                )
                 LinkField(
-                    value = url,
-                    onValueChange = { url = it },
-                    onSubmit = { if (!state.busy) viewModel.submitLink(url) },
+                    value = scoreUrl,
+                    onValueChange = { scoreUrl = it },
+                    placeholder = "http://…/GAS/Default.aspx?UserID=…&token=…",
+                    onSubmit = { if (!state.busy) viewModel.submitLink(scoreUrl, answerUrl) },
+                )
+
+                Text(
+                    text = "答题卡链接（选填）",
+                    fontSize = 11.sp,
+                    color = colors.onSurfaceVariantSummary,
+                    modifier = Modifier.padding(top = 10.dp, bottom = 4.dp),
+                )
+                LinkField(
+                    value = answerUrl,
+                    onValueChange = { answerUrl = it },
+                    placeholder = "http://…/TPTQ/Default.aspx?UserID=…&SysCode=0402&token=…",
+                    onSubmit = { if (!state.busy) viewModel.submitLink(scoreUrl, answerUrl) },
                 )
 
                 Spacer(Modifier.height(12.dp))
 
                 Button(
-                    onClick = { viewModel.submitLink(url) },
+                    onClick = { viewModel.submitLink(scoreUrl, answerUrl) },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !state.busy,
                 ) {
@@ -176,6 +197,7 @@ private fun LinkField(
     value: String,
     onValueChange: (String) -> Unit,
     onSubmit: () -> Unit,
+    placeholder: String = "http://…/SSQ/Default.aspx?UserID=…&token=…",
 ) {
     val colors = MiuixTheme.colorScheme
     Box(
@@ -187,7 +209,7 @@ private fun LinkField(
     ) {
         if (value.isEmpty()) {
             Text(
-                text = "http://…/SSQ/Default.aspx?UserID=…&token=…",
+                text = placeholder,
                 fontSize = 12.5.sp,
                 color = colors.onSurfaceVariantSummary,
                 maxLines = 1,

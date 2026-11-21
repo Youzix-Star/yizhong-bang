@@ -2,6 +2,7 @@ package com.yizhong.bang.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -51,7 +53,11 @@ import top.yukonga.miuix.kmp.icon.extended.Search
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 @Composable
-fun ScoresTab(state: UiState, viewModel: MainViewModel) {
+fun ScoresTab(
+    state: UiState,
+    viewModel: MainViewModel,
+    onAnswerSheet: (Student, Int) -> Unit,
+) {
     val sheet = state.sheet
     val students = remember(sheet, state.query) {
         Stats.filtered(Stats.sorted(sheet?.students.orEmpty()), state.query)
@@ -113,6 +119,7 @@ fun ScoresTab(state: UiState, viewModel: MainViewModel) {
                     sheet = sheet,
                     expanded = state.expanded.contains(student.no),
                     onToggle = { viewModel.toggleExpanded(student.no) },
+                    onAnswerSheet = onAnswerSheet,
                 )
             }
         }
@@ -181,6 +188,7 @@ private fun StudentCard(
     sheet: Sheet,
     expanded: Boolean,
     onToggle: () -> Unit,
+    onAnswerSheet: (Student, Int) -> Unit,
 ) {
     val colors = MiuixTheme.colorScheme
     val flags = Stats.flagCount(student)
@@ -371,6 +379,32 @@ private fun StudentCard(
                                 textAlign = TextAlign.End,
                                 modifier = Modifier.width(38.dp),
                             )
+                        }
+                    }
+
+                    Text(
+                        text = "答题卡",
+                        fontSize = 10.sp,
+                        color = colors.onSurfaceVariantSummary,
+                        modifier = Modifier.padding(top = 10.dp),
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState())
+                            .padding(top = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        sheet.subjects.forEachIndexed { index, subject ->
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(50))
+                                    .background(colors.primary.copy(alpha = 0.10f))
+                                    .clickable { onAnswerSheet(student, index) }
+                                    .padding(horizontal = 10.dp, vertical = 5.dp),
+                            ) {
+                                Text(subject, fontSize = 11.sp, color = colors.primary)
+                            }
                         }
                     }
                 }

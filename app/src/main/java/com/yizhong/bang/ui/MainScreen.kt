@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yizhong.bang.MainViewModel
 import com.yizhong.bang.UiState
 import top.yukonga.miuix.kmp.basic.Card
@@ -33,8 +34,10 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 fun MainScreen(state: UiState, viewModel: MainViewModel, scope: MiuixComponentScope) {
     var tab by remember { mutableIntStateOf(0) }
     val colors = MiuixTheme.colorScheme
+    val answer by viewModel.answer.collectAsStateWithLifecycle()
 
-    BackHandler(enabled = tab != 0) { tab = 0 }
+    BackHandler(enabled = answer.target == null && tab != 0) { tab = 0 }
+    BackHandler(enabled = answer.target != null) { viewModel.closeAnswerSheet() }
 
     val navItems = listOf(
         YzNavItem(MiuixIcons.Glass.HomeFill, "总览"),
@@ -51,6 +54,7 @@ fun MainScreen(state: UiState, viewModel: MainViewModel, scope: MiuixComponentSc
         else -> "外观、数据与关于"
     }
 
+    Box(modifier = Modifier.fillMaxSize()) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = Color.Transparent,
@@ -100,11 +104,19 @@ fun MainScreen(state: UiState, viewModel: MainViewModel, scope: MiuixComponentSc
             Box(modifier = Modifier.weight(1f)) {
                 when (tab) {
                     0 -> OverviewTab(state, viewModel)
-                    1 -> ScoresTab(state, viewModel)
+                    1 -> ScoresTab(state, viewModel, onAnswerSheet = { student, index -> viewModel.openAnswerSheet(student, index) })
                     else -> SettingsTab(state, viewModel)
                 }
             }
         }
+    }
+    if (answer.target != null) {
+        AnswerSheetScreen(
+            state = answer,
+            onClose = viewModel::closeAnswerSheet,
+            onRetry = viewModel::retryAnswerSheet,
+        )
+    }
     }
 }
 
