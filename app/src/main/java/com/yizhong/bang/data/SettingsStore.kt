@@ -11,6 +11,7 @@ data class AppSettings(
     val theme: AppTheme = AppTheme.System,
     val dynamicColor: Boolean = false,
     val amoled: Boolean = false,
+    val whiteBackground: Boolean = true,
 )
 
 class SettingsStore(context: Context) {
@@ -22,6 +23,7 @@ class SettingsStore(context: Context) {
     fun setTheme(theme: AppTheme) = update { it.copy(theme = theme) }
     fun setDynamicColor(enabled: Boolean) = update { it.copy(dynamicColor = enabled) }
     fun setAmoled(enabled: Boolean) = update { it.copy(amoled = enabled) }
+    fun setWhiteBackground(enabled: Boolean) = update { it.copy(whiteBackground = enabled) }
 
     private fun update(block: (AppSettings) -> AppSettings) {
         val next = block(_state.value)
@@ -30,6 +32,7 @@ class SettingsStore(context: Context) {
             .putString("theme", next.theme.name)
             .putBoolean("dynamic_color", next.dynamicColor)
             .putBoolean("amoled", next.amoled)
+            .putBoolean("white_background", next.whiteBackground)
             .apply()
     }
 
@@ -39,5 +42,6 @@ class SettingsStore(context: Context) {
         }.getOrDefault(AppTheme.System),
         dynamicColor = prefs.getBoolean("dynamic_color", false),
         amoled = prefs.getBoolean("amoled", false),
+        whiteBackground = prefs.getBoolean("white_background", true),
     )
 }

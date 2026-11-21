@@ -41,10 +41,8 @@ fun PredictiveBackContainer(
             .fillMaxSize()
             .graphicsLayer {
                 val p = progress.coerceIn(0f, 1f)
-                translationX = size.width * 0.28f * p
-                scaleX = 1f - 0.08f * p
-                scaleY = 1f - 0.08f * p
-                alpha = 1f - 0.10f * p
+                // 和 Miuix NavTransitions.MiuixDefault 一致：整页从右侧滑出。
+                translationX = size.width * p
             },
         content = content,
     )

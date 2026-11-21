@@ -27,24 +27,29 @@ fun YzTheme(
     theme: AppTheme,
     dynamicColor: Boolean,
     amoled: Boolean,
+    whiteBackground: Boolean,
     content: @Composable () -> Unit,
 ) {
     val systemDark = isSystemInDarkTheme()
-    val dark = when (theme) {
-        AppTheme.System -> systemDark
-        AppTheme.Light -> false
-        AppTheme.Dark -> true
+    val dark = if (whiteBackground) {
+        false
+    } else {
+        when (theme) {
+            AppTheme.System -> systemDark
+            AppTheme.Light -> false
+            AppTheme.Dark -> true
+        }
     }
 
-    val monet = dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-    val mode = if (monet) {
-        when (theme) {
+    val monet = !whiteBackground && dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    val mode = when {
+        whiteBackground -> ColorSchemeMode.Light
+        monet -> when (theme) {
             AppTheme.System -> ColorSchemeMode.MonetSystem
             AppTheme.Light -> ColorSchemeMode.MonetLight
             AppTheme.Dark -> ColorSchemeMode.MonetDark
         }
-    } else {
-        when (theme) {
+        else -> when (theme) {
             AppTheme.System -> ColorSchemeMode.System
             AppTheme.Light -> ColorSchemeMode.Light
             AppTheme.Dark -> ColorSchemeMode.Dark
@@ -61,9 +66,18 @@ fun YzTheme(
 
     CompositionLocalProvider(LocalIsDark provides dark) {
         MiuixTheme(controller = controller) {
-            if (amoled && dark) {
-                val colors = MiuixTheme.colorScheme
-                MiuixTheme(
+            val colors = MiuixTheme.colorScheme
+            when {
+                whiteBackground -> MiuixTheme(
+                    colors = colors.copy(
+                        background = Color.White,
+                        surface = Color.White,
+                    ),
+                ) {
+                    content()
+                }
+
+                amoled && dark -> MiuixTheme(
                     colors = colors.copy(
                         background = Color.Black,
                         surface = Color.Black,
@@ -72,8 +86,8 @@ fun YzTheme(
                 ) {
                     content()
                 }
-            } else {
-                content()
+
+                else -> content()
             }
         }
     }

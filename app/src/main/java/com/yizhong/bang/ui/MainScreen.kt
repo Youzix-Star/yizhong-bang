@@ -38,6 +38,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 fun MainScreen(state: UiState, viewModel: MainViewModel, scope: MiuixComponentScope) {
     var tab by remember { mutableIntStateOf(0) }
     var about by remember { mutableStateOf(false) }
+    var licenses by remember { mutableStateOf(false) }
     val colors = MiuixTheme.colorScheme
     val answer by viewModel.answer.collectAsStateWithLifecycle()
     val scrollBehavior = MiuixScrollBehavior()
@@ -134,7 +135,13 @@ fun MainScreen(state: UiState, viewModel: MainViewModel, scope: MiuixComponentSc
         )
     }
     if (about && answer.target == null) {
-        AboutScreen(onClose = { about = false })
+        AboutScreen(
+            onClose = { about = false },
+            onOpenLicenses = { licenses = true },
+        )
+    }
+    if (licenses) {
+        LicenseScreen(onClose = { licenses = false })
     }
     }
 }
