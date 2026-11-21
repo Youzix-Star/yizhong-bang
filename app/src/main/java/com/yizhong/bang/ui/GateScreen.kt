@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -24,6 +26,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -37,7 +42,6 @@ import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.InfiniteProgressIndicator
-import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.icon.MiuixIcons
@@ -86,8 +90,7 @@ fun GateScreen(state: UiState, viewModel: MainViewModel) {
                 }
 
                 Text(
-                    text = "粘「成绩分析」那条链接就行；App 会自动从页面菜单里找到「试卷分析」入口，" +
-                        "答题卡也能一起用。token 只留在内存里，不写日志、不落盘。",
+                    text = "粘贴成绩分析链接，进入后自动带出答题卡。",
                     fontSize = 13.sp,
                     lineHeight = 20.sp,
                     color = colors.onSurfaceVariantSummary,
@@ -131,6 +134,7 @@ fun GateScreen(state: UiState, viewModel: MainViewModel) {
                     }
                 }
 
+                Spacer(Modifier.height(4.dp))
                 TextButton(
                     text = "先看看示例",
                     onClick = { if (!state.busy) viewModel.loadDemo() },
@@ -156,7 +160,7 @@ fun GateScreen(state: UiState, viewModel: MainViewModel) {
                 )
 
                 Text(
-                    text = "只读、只给自己用。别公开部署，也别把带 token 的链接发给别人。",
+                    text = "只读使用，别把带 token 的链接发给别人。",
                     fontSize = 11.5.sp,
                     lineHeight = 17.sp,
                     color = colors.onSurfaceVariantSummary,
@@ -187,42 +191,59 @@ private fun LinkField(
     onSubmit: () -> Unit,
 ) {
     val colors = MiuixTheme.colorScheme
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = Modifier.fillMaxWidth(),
-        label = "成绩分析链接",
-        useLabelAsPlaceholder = true,
-        singleLine = true,
-        leadingIcon = {
-            Icon(
-                imageVector = MiuixIcons.Link,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = colors.onSurfaceVariantSummary,
-            )
-        },
-        trailingIcon = if (value.isNotEmpty()) {
-            {
-                IconButton(
-                    onClick = { onValueChange("") },
-                    modifier = Modifier.size(32.dp),
-                ) {
-                    Icon(
-                        imageVector = MiuixIcons.Clear,
-                        contentDescription = "清空",
-                        modifier = Modifier.size(18.dp),
-                        tint = colors.onSurfaceVariantSummary,
-                    )
-                }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(colors.surfaceContainerHigh)
+            .padding(horizontal = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = MiuixIcons.Link,
+            contentDescription = null,
+            modifier = Modifier.size(18.dp),
+            tint = colors.onSurfaceVariantSummary,
+        )
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 10.dp, top = 14.dp, bottom = 14.dp),
+            contentAlignment = Alignment.CenterStart,
+        ) {
+            if (value.isEmpty()) {
+                Text(
+                    text = "粘贴成绩分析链接",
+                    fontSize = 13.sp,
+                    color = colors.onSurfaceVariantSummary,
+                )
             }
-        } else {
-            null
-        },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Uri,
-            imeAction = ImeAction.Go,
-        ),
-        keyboardActions = KeyboardActions(onGo = { onSubmit() }),
-    )
+            BasicTextField(
+                value = value,
+                onValueChange = onValueChange,
+                singleLine = true,
+                textStyle = TextStyle(fontSize = 13.5.sp, color = colors.onSurface),
+                cursorBrush = SolidColor(colors.primary),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Uri,
+                    imeAction = ImeAction.Go,
+                ),
+                keyboardActions = KeyboardActions(onGo = { onSubmit() }),
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+        if (value.isNotEmpty()) {
+            IconButton(
+                onClick = { onValueChange("") },
+                modifier = Modifier.size(32.dp),
+            ) {
+                Icon(
+                    imageVector = MiuixIcons.Clear,
+                    contentDescription = "清空",
+                    modifier = Modifier.size(18.dp),
+                    tint = colors.onSurfaceVariantSummary,
+                )
+            }
+        }
+    }
 }

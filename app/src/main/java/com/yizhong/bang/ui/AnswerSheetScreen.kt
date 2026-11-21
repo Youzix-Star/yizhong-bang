@@ -208,12 +208,13 @@ fun AnswerSheetScreen(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(colors.background),
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+    PredictiveBackContainer(onBack = onClose) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colors.background),
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
             SmallTopAppBar(
                 title = "${target.studentName} · ${target.subject}",
                 subtitle = subtitle,
@@ -349,13 +350,14 @@ fun AnswerSheetScreen(
             }
         }
 
-        SnackbarHost(
-            state = snackbar,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .navigationBarsPadding()
-                .padding(bottom = if (pages.isNotEmpty()) 78.dp else 18.dp),
-        )
+            SnackbarHost(
+                state = snackbar,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
+                    .padding(bottom = if (pages.isNotEmpty()) 78.dp else 18.dp),
+            )
+        }
     }
 }
 

@@ -20,6 +20,7 @@ import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.NavigationBar
 import top.yukonga.miuix.kmp.basic.NavigationBarItem
 import top.yukonga.miuix.kmp.basic.Scaffold
+import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
 import top.yukonga.miuix.kmp.blur.layerBackdrop
@@ -86,21 +87,26 @@ fun YzTopAppBar(
     subtitle: String,
     useOs4: Boolean,
     backdrop: LayerBackdrop?,
+    scrollBehavior: ScrollBehavior? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     if (useOs4) {
         GlassTopAppBar(
             title = title,
+            largeTitle = title,
             subtitle = subtitle,
             backdrop = backdrop,
             progressiveBlur = backdrop != null,
+            scrollBehavior = scrollBehavior,
             style = GlassDefaults.style(YzTheme.isDark),
             actions = actions,
         )
     } else {
         TopAppBar(
             title = title,
+            largeTitle = title,
             subtitle = subtitle,
+            scrollBehavior = scrollBehavior,
             color = MiuixTheme.colorScheme.surface,
             actions = actions,
         )

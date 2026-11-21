@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -41,8 +42,9 @@ fun AboutScreen(onClose: () -> Unit) {
     val colors = MiuixTheme.colorScheme
     val context = LocalContext.current
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        AuroraBackground()
+    PredictiveBackContainer(onBack = onClose) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            AuroraBackground()
         BgEffectBackground(
             dynamicBackground = true,
             modifier = Modifier.fillMaxSize(),
@@ -52,7 +54,7 @@ fun AboutScreen(onClose: () -> Unit) {
         Column(modifier = Modifier.fillMaxSize()) {
             SmallTopAppBar(
                 title = "关于",
-                subtitle = "一中帮",
+                color = Color.Transparent,
                 navigationIcon = {
                     IconButton(onClick = onClose) {
                         Icon(
@@ -176,6 +178,7 @@ fun AboutScreen(onClose: () -> Unit) {
                     )
                 }
             }
+        }
         }
         }
     }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -21,6 +22,7 @@ import com.yizhong.bang.MainViewModel
 import com.yizhong.bang.UiState
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.LinearProgressIndicator
+import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.SmallTitle
 import top.yukonga.miuix.kmp.basic.Text
@@ -38,10 +40,9 @@ fun MainScreen(state: UiState, viewModel: MainViewModel, scope: MiuixComponentSc
     var about by remember { mutableStateOf(false) }
     val colors = MiuixTheme.colorScheme
     val answer by viewModel.answer.collectAsStateWithLifecycle()
+    val scrollBehavior = MiuixScrollBehavior()
 
     BackHandler(enabled = answer.target == null && tab != 0) { tab = 0 }
-    BackHandler(enabled = answer.target != null) { viewModel.closeAnswerSheet() }
-    BackHandler(enabled = answer.target == null && about) { about = false }
 
     val navItems = listOf(
         YzNavItem(MiuixIcons.Glass.HomeFill, "总览"),
@@ -72,6 +73,7 @@ fun MainScreen(state: UiState, viewModel: MainViewModel, scope: MiuixComponentSc
                 subtitle = subtitle.ifBlank { "一中帮" },
                 useOs4 = scope.useOs4,
                 backdrop = scope.contentBackdrop,
+                scrollBehavior = scrollBehavior,
                 actions = {
                     YzTopBarAction(
                         icon = MiuixIcons.Refresh,
@@ -105,7 +107,11 @@ fun MainScreen(state: UiState, viewModel: MainViewModel, scope: MiuixComponentSc
             state.error?.let { message ->
                 ErrorBanner(message = message, onRetry = { viewModel.loadSheet(force = true) })
             }
-            Box(modifier = Modifier.weight(1f)) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
+            ) {
                 when (tab) {
                     0 -> OverviewTab(state, viewModel)
                     1 -> ScoresTab(state, viewModel, onAnswerSheet = { student, index -> viewModel.openAnswerSheet(student, index) })
