@@ -203,7 +203,7 @@ private fun StudentCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 56.dp)
+                .heightIn(min = 64.dp)
                 .clickable { onToggle() },
             verticalAlignment = Alignment.CenterVertically,
         ) {
