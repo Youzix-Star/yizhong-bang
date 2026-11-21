@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yizhong.bang.BuildConfig
+import com.yizhong.bang.ui.effect.BgEffectBackground
 import top.yukonga.miuix.kmp.basic.BasicComponent
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
@@ -42,6 +43,12 @@ fun AboutScreen(onClose: () -> Unit) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         AuroraBackground()
+        BgEffectBackground(
+            dynamicBackground = true,
+            modifier = Modifier.fillMaxSize(),
+            effectBackground = true,
+            isOs3Effect = true,
+        ) {
         Column(modifier = Modifier.fillMaxSize()) {
             SmallTopAppBar(
                 title = "关于",
@@ -169,6 +176,7 @@ fun AboutScreen(onClose: () -> Unit) {
                     )
                 }
             }
+        }
         }
     }
 }

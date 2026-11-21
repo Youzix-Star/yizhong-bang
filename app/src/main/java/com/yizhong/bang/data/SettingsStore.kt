@@ -9,7 +9,7 @@ enum class AppTheme { System, Light, Dark }
 
 data class AppSettings(
     val theme: AppTheme = AppTheme.System,
-    val dynamicColor: Boolean = true,
+    val dynamicColor: Boolean = false,
     val amoled: Boolean = false,
 )
 
@@ -37,7 +37,7 @@ class SettingsStore(context: Context) {
         theme = runCatching {
             AppTheme.valueOf(prefs.getString("theme", AppTheme.System.name) ?: AppTheme.System.name)
         }.getOrDefault(AppTheme.System),
-        dynamicColor = prefs.getBoolean("dynamic", true),
+        dynamicColor = prefs.getBoolean("dynamic", false),
         amoled = prefs.getBoolean("amoled", false),
     )
 }
