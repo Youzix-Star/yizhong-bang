@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -52,6 +51,7 @@ import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.Clear
 import top.yukonga.miuix.kmp.icon.extended.Search
 import top.yukonga.miuix.kmp.theme.MiuixTheme
+import top.yukonga.miuix.kmp.utils.PressFeedbackType
 
 @Composable
 fun ScoresTab(
@@ -199,12 +199,16 @@ private fun StudentCard(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = 18.dp,
         insideMargin = PaddingValues(14.dp),
+        pressFeedbackType = PressFeedbackType.Sink,
+        showIndication = true,
+        // 收起时整张圆角卡片都能点；展开后只有头部能收起，避免点明细时误收起。
+        onClick = if (expanded) null else onToggle,
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 64.dp)
-                .clickable { onToggle() },
+                .clip(RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp))
+                .clickable(enabled = expanded) { onToggle() },
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(

@@ -585,7 +585,7 @@ private fun AnswerBottomBar(
                 modifier = Modifier
                     .width(42.dp)
                     .clickable(onClickLabel = "重置缩放", onClick = onResetZoom)
-                    .padding(vertical = 8.dp),
+                    .padding(vertical = 12.dp),
             )
             IconButton(
                 onClick = onZoomIn,
