@@ -12,9 +12,11 @@ import com.yizhong.bang.data.Meta
 import com.yizhong.bang.data.SettingsStore
 import com.yizhong.bang.data.Sheet
 import com.yizhong.bang.data.Student
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -68,6 +70,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private var requestId = 0
     private var answerRequestId = 0
+    private var answerJob: Job? = null
 
     // ── 入口 ─────────────────────────────────────────────
     fun submitLink(url: String) {
@@ -249,6 +252,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun logout() {
         requestId++
         answerRequestId++
+        answerJob?.cancel()
+        answerJob = null
         _answer.value = AnswerState()
         viewModelScope.launch {
             repo.reset()
@@ -268,6 +273,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             subject = subject,
             className = sheet.meta?.className ?: "",
         )
+        answerJob?.cancel()
         val id = ++answerRequestId
         if (!snapshot.answerBound) {
             _answer.value = AnswerState(
@@ -277,29 +283,46 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
         _answer.value = AnswerState(target = target, loading = true)
-        viewModelScope.launch {
+        answerJob = viewModelScope.launch {
             try {
-                val pages = answerRepo.load(
+                answerRepo.loadPages(
                     gradeCode = snapshot.grade,
                     studentNo = student.no,
                     studentName = student.name,
                     subject = subject,
                     subjectIndex = subjectIndex,
                     className = target.className,
-                )
-                if (id == answerRequestId) {
-                    _answer.value = AnswerState(target = target, pages = pages)
+                ).collect { bytes ->
+                    if (id == answerRequestId) {
+                        // 取到一页就先显示一页，剩下的继续在后台下载。
+                        _answer.update { it.copy(pages = it.pages + bytes) }
+                    }
                 }
+                if (id == answerRequestId) {
+                    _answer.update { it.copy(loading = false) }
+                }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
             } catch (e: Exception) {
                 if (id == answerRequestId) {
-                    _answer.value = AnswerState(target = target, error = friendly(e))
+                    // 已经拿到的页不清掉，只把错误提示挂上去。
+                    _answer.update { it.copy(loading = false, error = friendly(e)) }
                 }
             }
         }
     }
 
+    fun switchAnswerSubject(subjectIndex: Int) {
+        val target = _answer.value.target ?: return
+        if (target.subjectIndex == subjectIndex) return
+        val student = _state.value.sheet?.students?.firstOrNull { it.no == target.studentNo } ?: return
+        openAnswerSheet(student, subjectIndex)
+    }
+
     fun closeAnswerSheet() {
         answerRequestId++
+        answerJob?.cancel()
+        answerJob = null
         _answer.value = AnswerState()
     }
 

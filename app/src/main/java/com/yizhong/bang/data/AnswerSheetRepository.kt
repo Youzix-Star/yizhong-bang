@@ -2,13 +2,16 @@ package com.yizhong.bang.data
 
 import java.net.URLEncoder
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
 /**
  * 答题卡会话。
  *
  * 学校把「成绩」和「试卷分析」拆成了两个模块，token 也是一次性、分模块的，
- * 所以这里单独持有一个 [SchoolClient]，由用户在登录页额外粘一条试卷分析链接。
+ * 所以这里单独持有一个 [SchoolClient]；入口链接从成绩页菜单里自动带出来。
  *
  * testImageCode 的规律（高一 2026-2027 上学期期中，已验证）：
  *   4360012151 260104 02 01 0003 01
@@ -41,16 +44,18 @@ class AnswerSheetRepository {
 
     /**
      * 拉取某个学生某科的答卷图片（JPEG 原始字节）。
+     *
+     * 每取到一页就 emit 一页，页面可以边下边看；全部取完再结束。
      * 服务端把 Content-Type 错写成 text/html，但字节本身是合法 JPEG，因此只认文件头。
      */
-    suspend fun load(
+    fun loadPages(
         gradeCode: String,
         studentNo: String,
         studentName: String,
         subject: String,
         subjectIndex: Int,
         className: String,
-    ): List<ByteArray> = withContext(Dispatchers.IO) {
+    ): Flow<ByteArray> = flow {
         val c = client ?: throw IllegalStateException("还没有绑定答题卡链接")
         val uid = userId ?: throw IllegalStateException("还没有绑定答题卡链接")
 
@@ -58,24 +63,21 @@ class AnswerSheetRepository {
             ?: studentNumber(c, uid, gradeCode, studentName)
             ?: throw IllegalStateException("找不到这个学生的答卷编号")
 
-        val pages = mutableListOf<ByteArray>()
+        var emitted = 0
         for (page in 1..MAX_PAGES) {
             val code = codeBase + "%02d".format(subjectIndex + 1) + paper + "%02d".format(page)
             val url = "/TPTQ/ShowImage.aspx?testImageCode=$code" +
                 "&studentCode=$studentCode&imageCount=$MAX_PAGES" +
                 "&CouseText=${enc(subject)}&ClassName=${enc(className)}"
             val bytes = c.getBytes(url)
-            if (isJpeg(bytes)) {
-                pages += bytes
-            } else {
-                break
-            }
+            if (!isJpeg(bytes)) break
+            emit(bytes)
+            emitted++
         }
-        if (pages.isEmpty()) {
+        if (emitted == 0) {
             throw IllegalStateException("这个科目没有找到答题卡（当前内置的是期中考试模板）")
         }
-        pages
-    }
+    }.flowOn(Dispatchers.IO)
 
     /** 用一张现成的 BrowseTestImage 地址校准模板（换考试时用）。 */
     fun setTemplateFromSample(url: String) {

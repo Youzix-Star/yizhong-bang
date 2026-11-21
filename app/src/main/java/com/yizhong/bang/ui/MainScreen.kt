@@ -21,6 +21,7 @@ import com.yizhong.bang.UiState
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.LinearProgressIndicator
 import top.yukonga.miuix.kmp.basic.Scaffold
+import top.yukonga.miuix.kmp.basic.SmallTitle
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.icon.MiuixIcons
@@ -113,6 +114,8 @@ fun MainScreen(state: UiState, viewModel: MainViewModel, scope: MiuixComponentSc
     if (answer.target != null) {
         AnswerSheetScreen(
             state = answer,
+            subjects = state.sheet?.subjects.orEmpty(),
+            onSelectSubject = viewModel::switchAnswerSubject,
             onClose = viewModel::closeAnswerSheet,
             onRetry = viewModel::retryAnswerSheet,
         )
@@ -162,13 +165,16 @@ fun SectionCard(
     )
 }
 
-/** 简单的分组小标题。 */
+/** 分组小标题交给 Miuix 的 SmallTitle，字号和缩进跟系统设置页一致。 */
 @Composable
 fun SectionTitle(text: String, modifier: Modifier = Modifier) {
-    Text(
+    SmallTitle(
         text = text,
-        fontSize = 11.5.sp,
-        color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
-        modifier = modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+        modifier = modifier,
+        textColor = MiuixTheme.colorScheme.onSurfaceVariantSummary,
+        insideMargin = androidx.compose.foundation.layout.PaddingValues(
+            horizontal = 6.dp,
+            vertical = 2.dp,
+        ),
     )
 }

@@ -12,10 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -26,9 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -38,9 +34,14 @@ import com.yizhong.bang.MainViewModel
 import com.yizhong.bang.UiState
 import top.yukonga.miuix.kmp.basic.Button
 import top.yukonga.miuix.kmp.basic.Card
-import top.yukonga.miuix.kmp.basic.LinearProgressIndicator
+import top.yukonga.miuix.kmp.basic.IconButton
+import top.yukonga.miuix.kmp.basic.InfiniteProgressIndicator
+import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.extended.Clear
+import top.yukonga.miuix.kmp.icon.extended.Link
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 @Composable
@@ -94,16 +95,9 @@ fun GateScreen(state: UiState, viewModel: MainViewModel) {
 
                 Spacer(Modifier.height(16.dp))
 
-                Text(
-                    text = "成绩分析链接",
-                    fontSize = 11.sp,
-                    color = colors.onSurfaceVariantSummary,
-                    modifier = Modifier.padding(bottom = 4.dp),
-                )
                 LinkField(
                     value = scoreUrl,
                     onValueChange = { scoreUrl = it },
-                    placeholder = "http://…/GAS/Default.aspx?UserID=…&SysCode=0403&token=…",
                     onSubmit = { if (!state.busy) viewModel.submitLink(scoreUrl) },
                 )
 
@@ -114,19 +108,26 @@ fun GateScreen(state: UiState, viewModel: MainViewModel) {
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !state.busy,
                 ) {
-                    Text(
-                        text = if (state.busy) "连接中…" else "进入",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                }
-
-                if (state.busy) {
-                    LinearProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 10.dp),
-                    )
+                    if (state.busy) {
+                        InfiniteProgressIndicator(
+                            color = colors.onPrimary,
+                            size = 18.dp,
+                            strokeWidth = 2.dp,
+                            orbitingDotSize = 2.dp,
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = "连接中…",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    } else {
+                        Text(
+                            text = "进入",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
                 }
 
                 TextButton(
@@ -183,39 +184,44 @@ private fun LinkField(
     value: String,
     onValueChange: (String) -> Unit,
     onSubmit: () -> Unit,
-    placeholder: String = "http://…/SSQ/Default.aspx?UserID=…&token=…",
 ) {
     val colors = MiuixTheme.colorScheme
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(colors.surfaceContainerHigh)
-            .padding(horizontal = 14.dp, vertical = 14.dp),
-    ) {
-        if (value.isEmpty()) {
-            Text(
-                text = placeholder,
-                fontSize = 12.5.sp,
-                color = colors.onSurfaceVariantSummary,
-                maxLines = 1,
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = Modifier.fillMaxWidth(),
+        label = "成绩分析链接",
+        useLabelAsPlaceholder = true,
+        singleLine = true,
+        leadingIcon = {
+            Icon(
+                imageVector = MiuixIcons.Link,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = colors.onSurfaceVariantSummary,
             )
-        }
-        BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
-            singleLine = true,
-            textStyle = TextStyle(
-                fontSize = 13.5.sp,
-                color = colors.onSurface,
-            ),
-            cursorBrush = SolidColor(colors.primary),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Uri,
-                imeAction = ImeAction.Go,
-            ),
-            keyboardActions = KeyboardActions(onGo = { onSubmit() }),
-            modifier = Modifier.fillMaxWidth(),
-        )
-    }
+        },
+        trailingIcon = if (value.isNotEmpty()) {
+            {
+                IconButton(
+                    onClick = { onValueChange("") },
+                    modifier = Modifier.size(32.dp),
+                ) {
+                    Icon(
+                        imageVector = MiuixIcons.Clear,
+                        contentDescription = "清空",
+                        modifier = Modifier.size(18.dp),
+                        tint = colors.onSurfaceVariantSummary,
+                    )
+                }
+            }
+        } else {
+            null
+        },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Uri,
+            imeAction = ImeAction.Go,
+        ),
+        keyboardActions = KeyboardActions(onGo = { onSubmit() }),
+    )
 }
