@@ -134,7 +134,7 @@ fun GateScreen(state: UiState, viewModel: MainViewModel) {
                     }
                 }
 
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(8.dp))
                 TextButton(
                     text = "先看看示例",
                     onClick = { if (!state.busy) viewModel.loadDemo() },
