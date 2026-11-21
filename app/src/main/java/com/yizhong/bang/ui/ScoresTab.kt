@@ -205,14 +205,18 @@ private fun StudentCard(
         // 收起时整张圆角卡片都能点；展开后只有头部能收起，避免点明细时误收起。
         onClick = if (expanded) null else onToggle,
     ) {
-        Row(
-            modifier = Modifier
+        val headerModifier = if (expanded) {
+            Modifier
                 .fillMaxWidth()
                 .clickable(
-                    enabled = expanded,
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                ) { onToggle() },
+                ) { onToggle() }
+        } else {
+            Modifier.fillMaxWidth()
+        }
+        Row(
+            modifier = headerModifier,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(

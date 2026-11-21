@@ -5,13 +5,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yizhong.bang.BuildConfig
 import com.yizhong.bang.MainViewModel
@@ -22,9 +26,14 @@ import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.DropdownItem
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.Switch
+import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.ChevronForward
 import top.yukonga.miuix.kmp.theme.MiuixTheme
+
+private val GroupTopShape = RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp)
+private val GroupBottomShape = RoundedCornerShape(bottomStart = 18.dp, bottomEnd = 18.dp)
+private val GroupShape = RoundedCornerShape(18.dp)
 
 @Composable
 fun SettingsTab(
@@ -38,15 +47,14 @@ fun SettingsTab(
     LazyColumn(
         state = rememberLazyListState(),
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 112.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 104.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        item { SectionTitle("外观") }
+        item { SettingsSectionTitle("外观") }
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                cornerRadius = 20.dp,
-                insideMargin = PaddingValues(vertical = 4.dp),
+                cornerRadius = 18.dp,
             ) {
                 YzSpinnerPreference(
                     items = AppTheme.values().map {
@@ -60,6 +68,7 @@ fun SettingsTab(
                     },
                     selectedIndex = settings.theme.ordinal,
                     title = "主题",
+                    modifier = Modifier.clip(GroupTopShape),
                     onSelectedIndexChange = { index ->
                         AppTheme.values().getOrNull(index)?.let(viewModel::setTheme)
                     },
@@ -79,57 +88,60 @@ fun SettingsTab(
                     title = "纯黑背景",
                     summary = "深色模式下生效",
                     checked = settings.amoled,
+                    modifier = Modifier.clip(GroupBottomShape),
                     onCheckedChange = viewModel::setAmoled,
                 )
             }
         }
 
-        item { SectionTitle("数据") }
+        item { SettingsSectionTitle("数据") }
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                cornerRadius = 20.dp,
-                insideMargin = PaddingValues(vertical = 4.dp),
+                cornerRadius = 18.dp,
             ) {
                 BasicComponent(
                     title = "退出登录",
                     summary = "清除会话并返回登录",
+                    modifier = Modifier.clip(GroupShape),
                     onClick = viewModel::logout,
                 )
             }
         }
 
-        item { SectionTitle("答题卡") }
+        item { SettingsSectionTitle("答题卡") }
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                cornerRadius = 20.dp,
-                insideMargin = PaddingValues(vertical = 4.dp),
+                cornerRadius = 18.dp,
             ) {
+                val answerError = state.answerError
+                val hasError = !answerError.isNullOrBlank()
                 BasicComponent(
                     title = "连接状态",
                     summary = if (state.answerBound) "已绑定" else "未绑定",
+                    modifier = Modifier.clip(if (hasError) GroupTopShape else GroupShape),
                 )
-                val answerError = state.answerError
                 if (!answerError.isNullOrBlank()) {
                     BasicComponent(
                         title = "上次错误",
                         summary = answerError,
+                        modifier = Modifier.clip(GroupBottomShape),
                     )
                 }
             }
         }
 
-        item { SectionTitle("其他") }
+        item { SettingsSectionTitle("其他") }
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                cornerRadius = 20.dp,
-                insideMargin = PaddingValues(vertical = 4.dp),
+                cornerRadius = 18.dp,
             ) {
                 BasicComponent(
                     title = "关于一中帮",
                     summary = "v${BuildConfig.VERSION_NAME}",
+                    modifier = Modifier.clip(GroupShape),
                     onClick = onOpenAbout,
                     endActions = {
                         Icon(
@@ -146,14 +158,26 @@ fun SettingsTab(
 }
 
 @Composable
+private fun SettingsSectionTitle(text: String) {
+    Text(
+        text = text,
+        fontSize = 11.5.sp,
+        color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
+        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+    )
+}
+
+@Composable
 private fun SettingSwitch(
     title: String,
     summary: String,
     checked: Boolean,
     enabled: Boolean = true,
+    modifier: Modifier = Modifier,
     onCheckedChange: (Boolean) -> Unit,
 ) {
     BasicComponent(
+        modifier = modifier,
         title = title,
         summary = summary,
         enabled = enabled,
