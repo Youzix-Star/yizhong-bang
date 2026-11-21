@@ -28,7 +28,7 @@ class SettingsStore(context: Context) {
         _state.value = next
         prefs.edit()
             .putString("theme", next.theme.name)
-            .putBoolean("dynamic", next.dynamicColor)
+            .putBoolean("dynamic_color", next.dynamicColor)
             .putBoolean("amoled", next.amoled)
             .apply()
     }
@@ -37,7 +37,7 @@ class SettingsStore(context: Context) {
         theme = runCatching {
             AppTheme.valueOf(prefs.getString("theme", AppTheme.System.name) ?: AppTheme.System.name)
         }.getOrDefault(AppTheme.System),
-        dynamicColor = prefs.getBoolean("dynamic", false),
+        dynamicColor = prefs.getBoolean("dynamic_color", false),
         amoled = prefs.getBoolean("amoled", false),
     )
 }
