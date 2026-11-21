@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -21,6 +20,7 @@ import com.yizhong.bang.ui.AuroraBackground
 import com.yizhong.bang.ui.GateScreen
 import com.yizhong.bang.ui.MainScreen
 import com.yizhong.bang.ui.MiuixHost
+import top.yukonga.miuix.kmp.theme.MiuixTheme
 import com.yizhong.bang.ui.YzTheme
 import com.yizhong.bang.ui.pageBackdropModifier
 import top.yukonga.miuix.kmp.material.isRenderEffectSupported
@@ -43,7 +43,6 @@ class MainActivity : ComponentActivity() {
                 theme = settings.theme,
                 dynamicColor = settings.dynamicColor,
                 amoled = settings.amoled,
-                whiteBackground = settings.whiteBackground,
             ) {
                 val dark = YzTheme.isDark
                 SideEffect {
@@ -70,7 +69,7 @@ class MainActivity : ComponentActivity() {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .background(Color.White),
+                                    .background(MiuixTheme.colorScheme.background),
                             )
                         } else {
                             AuroraBackground()

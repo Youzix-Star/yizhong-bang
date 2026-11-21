@@ -67,28 +67,25 @@ fun SettingsTab(
                 )
                 SwitchPreference(
                     title = "纯白背景",
-                    summary = "默认开启，页面使用纯白背景",
+                    summary = "去掉背景光斑，只保留纯色",
                     checked = settings.whiteBackground,
                     onCheckedChange = viewModel::setWhiteBackground,
                 )
                 SwitchPreference(
                     title = "动态取色",
-                    summary = if (settings.whiteBackground) {
-                        "纯白背景下不可用"
-                    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    summary = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         "跟随壁纸主色"
                     } else {
                         "需要 Android 12"
                     },
                     checked = settings.dynamicColor,
-                    enabled = !settings.whiteBackground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
+                    enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
                     onCheckedChange = viewModel::setDynamicColor,
                 )
                 SwitchPreference(
                     title = "纯黑背景",
-                    summary = if (settings.whiteBackground) "纯白背景下不可用" else "深色模式下生效",
+                    summary = "深色模式下生效",
                     checked = settings.amoled,
-                    enabled = !settings.whiteBackground,
                     onCheckedChange = viewModel::setAmoled,
                 )
             }
