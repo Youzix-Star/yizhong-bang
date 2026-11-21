@@ -129,11 +129,32 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun refresh() {
-        if (_state.value.demo) {
+        val current = _state.value
+        if (current.demo) {
             loadDemo()
             return
         }
-        loadSheet(force = true)
+        if (current.busy) return
+        _state.update { it.copy(busy = true, error = null) }
+        viewModelScope.launch {
+            try {
+                val meta = repo.meta(force = true)
+                val grade = meta.grades.firstOrNull { it.value == current.grade }
+                    ?: meta.grades.firstOrNull { it.exams.isNotEmpty() && it.classes.isNotEmpty() }
+                    ?: meta.grades.firstOrNull()
+                if (grade == null) throw IllegalStateException("这个账号没有可查的年级")
+                val exam = grade.exams.firstOrNull { it.value == current.exam }?.value
+                    ?: grade.exams.firstOrNull()?.value ?: ""
+                val clazz = grade.classes.firstOrNull { it.value == current.clazz }?.value
+                    ?: grade.classes.firstOrNull()?.value ?: ""
+                _state.update {
+                    it.copy(meta = meta, grade = grade.value, exam = exam, clazz = clazz)
+                }
+                loadSheet(force = true)
+            } catch (e: Exception) {
+                _state.update { it.copy(busy = false, error = friendly(e)) }
+            }
+        }
     }
 
     fun selectGrade(value: String) {
@@ -186,7 +207,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setTheme(theme: AppTheme) = settingsStore.setTheme(theme)
     fun setDynamicColor(enabled: Boolean) = settingsStore.setDynamicColor(enabled)
     fun setAmoled(enabled: Boolean) = settingsStore.setAmoled(enabled)
-    fun toggleGold() = settingsStore.setGold(!settingsStore.state.value.gold)
 
     private fun friendly(e: Exception): String {
         val text = e.message ?: return "网络不太顺，稍后重试"

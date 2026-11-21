@@ -5,15 +5,17 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
-/** 带 10 分钟内存缓存的取数入口。会话只活在进程里，不落盘。 */
+/**
+ * 会话内缓存：取过一次就一直留着，只有点刷新（force = true）才重新请求。
+ * 终端是 App，不是网页，没必要按分钟过期。会话本身仍只活在进程里，不落盘。
+ */
 class GradeRepository {
 
     private val mutex = Mutex()
     private var client = SchoolClient()
 
     private var metaCache: Meta? = null
-    private var metaAt = 0L
-    private val sheetCache = mutableMapOf<String, Pair<Long, Sheet>>()
+    private val sheetCache = mutableMapOf<String, Sheet>()
 
     suspend fun open(url: String): String? = withContext(Dispatchers.IO) {
         val fresh = SchoolClient()
@@ -21,7 +23,6 @@ class GradeRepository {
         mutex.withLock {
             client = fresh
             metaCache = null
-            metaAt = 0L
             sheetCache.clear()
         }
         user
@@ -29,14 +30,10 @@ class GradeRepository {
 
     suspend fun meta(force: Boolean = false): Meta = withContext(Dispatchers.IO) {
         mutex.withLock {
-            val now = System.currentTimeMillis()
             val cached = metaCache
-            if (!force && cached != null && now - metaAt < TTL) {
-                return@withLock cached.copy(cached = true)
-            }
+            if (!force && cached != null) return@withLock cached.copy(cached = true)
             val fresh = client.meta().copy(cached = false)
             metaCache = fresh
-            metaAt = now
             fresh
         }
     }
@@ -49,13 +46,13 @@ class GradeRepository {
     ): Sheet = withContext(Dispatchers.IO) {
         mutex.withLock {
             val key = "$grade|$exam|$clazz"
-            val now = System.currentTimeMillis()
             val hit = sheetCache[key]
-            if (!force && hit != null && now - hit.first < TTL) {
-                return@withLock hit.second.copy(cached = true, at = hit.first)
-            }
-            val fresh = client.sheet(grade, exam, clazz).copy(cached = false, at = now)
-            sheetCache[key] = now to fresh
+            if (!force && hit != null) return@withLock hit.copy(cached = true)
+            val fresh = client.sheet(grade, exam, clazz).copy(
+                cached = false,
+                at = System.currentTimeMillis(),
+            )
+            sheetCache[key] = fresh
             fresh
         }
     }
@@ -64,12 +61,7 @@ class GradeRepository {
         mutex.withLock {
             client = SchoolClient()
             metaCache = null
-            metaAt = 0L
             sheetCache.clear()
         }
-    }
-
-    private companion object {
-        const val TTL = 10 * 60 * 1000L
     }
 }

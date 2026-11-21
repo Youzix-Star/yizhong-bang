@@ -77,7 +77,7 @@ app/src/main/java/com/yizhong/bang/
 │   ├── SchoolClient.kt      cookie + __VIEWSTATE + postback
 │   ├── SheetParser.kt       导出 HTML → Sheet
 │   ├── Html.kt              表单 / 下拉框 / 实体解析
-│   ├── GradeRepository.kt   10 分钟内存缓存
+│   ├── GradeRepository.kt   会话内缓存（点刷新才更新）
 │   ├── Stats.kt             差值、点评、筛选排序
 │   └── DemoData.kt          示例数据
 └── ui/
@@ -97,10 +97,6 @@ app/src/main/java/com/yizhong/bang/
 - 学校返回的是一个班 58 名学生的姓名、考号、逐科成绩和排名。**只适合自己用，别公开部署、别分享链接。**
 - 仓库里的示例数据已脱敏。
 - 没有实现「账号密码登录」：学校那套还需要验证码，属于没实测过的路径，不如粘链接稳。
-
-## 彩蛋
-
-设置 → 关于 → 连续点「版本」7 次。
 
 ## 已知限制
 

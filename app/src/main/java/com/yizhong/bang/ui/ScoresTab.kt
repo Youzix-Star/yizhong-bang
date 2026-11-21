@@ -266,6 +266,48 @@ private fun StudentCard(
                         .background(colors.dividerLine),
                 )
                 Column(modifier = Modifier.padding(top = 6.dp)) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "科目",
+                            fontSize = 10.sp,
+                            color = colors.onSurfaceVariantSummary,
+                            modifier = Modifier.width(40.dp),
+                        )
+                        Spacer(Modifier.weight(1f))
+                        Text(
+                            text = "得分",
+                            fontSize = 10.sp,
+                            color = colors.onSurfaceVariantSummary,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.width(50.dp),
+                        )
+                        Text(
+                            text = "班均",
+                            fontSize = 10.sp,
+                            color = colors.onSurfaceVariantSummary,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.width(54.dp),
+                        )
+                        Text(
+                            text = "班位",
+                            fontSize = 10.sp,
+                            color = colors.onSurfaceVariantSummary,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.width(30.dp),
+                        )
+                        Text(
+                            text = "级位",
+                            fontSize = 10.sp,
+                            color = colors.onSurfaceVariantSummary,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.width(38.dp),
+                        )
+                    }
                     sheet.subjects.forEachIndexed { index, subject ->
                         val full = sheet.full.getOrNull(index) ?: 100.0
                         val score = student.scores.getOrNull(index)
@@ -283,7 +325,7 @@ private fun StudentCard(
                                 text = subject,
                                 fontSize = 12.5.sp,
                                 color = colors.onSurface,
-                                modifier = Modifier.width(46.dp),
+                                modifier = Modifier.width(40.dp),
                             )
                             Box(
                                 modifier = Modifier
@@ -306,18 +348,25 @@ private fun StudentCard(
                                 fontWeight = FontWeight.Medium,
                                 color = colors.onSurface,
                                 textAlign = TextAlign.End,
-                                modifier = Modifier.padding(start = 10.dp).width(46.dp),
+                                modifier = Modifier.width(50.dp),
                             )
                             Text(
-                                text = "班均 ${Stats.fmt(classAvg, 1)}",
-                                fontSize = 10.sp,
+                                text = "均${Stats.fmt(classAvg, 1)}",
+                                fontSize = 9.5.sp,
                                 color = colors.onSurfaceVariantSummary,
                                 textAlign = TextAlign.End,
-                                modifier = Modifier.width(66.dp),
+                                modifier = Modifier.width(54.dp),
                             )
                             Text(
                                 text = "班${rankOfSubject?.classRank ?: "—"}",
-                                fontSize = 10.sp,
+                                fontSize = 9.5.sp,
+                                color = colors.onSurfaceVariantSummary,
+                                textAlign = TextAlign.End,
+                                modifier = Modifier.width(30.dp),
+                            )
+                            Text(
+                                text = "级${rankOfSubject?.grade ?: "—"}",
+                                fontSize = 9.5.sp,
                                 color = colors.onSurfaceVariantSummary,
                                 textAlign = TextAlign.End,
                                 modifier = Modifier.width(38.dp),

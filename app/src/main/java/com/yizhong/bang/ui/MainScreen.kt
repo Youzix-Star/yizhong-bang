@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yizhong.bang.MainViewModel
 import com.yizhong.bang.UiState
 import top.yukonga.miuix.kmp.basic.Card
@@ -33,7 +32,6 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 @Composable
 fun MainScreen(state: UiState, viewModel: MainViewModel, scope: MiuixComponentScope) {
     var tab by remember { mutableIntStateOf(0) }
-    val settings by viewModel.settings.collectAsStateWithLifecycle()
     val colors = MiuixTheme.colorScheme
 
     BackHandler(enabled = tab != 0) { tab = 0 }
@@ -101,7 +99,7 @@ fun MainScreen(state: UiState, viewModel: MainViewModel, scope: MiuixComponentSc
             }
             Box(modifier = Modifier.weight(1f)) {
                 when (tab) {
-                    0 -> OverviewTab(state, viewModel, gold = settings.gold)
+                    0 -> OverviewTab(state, viewModel)
                     1 -> ScoresTab(state, viewModel)
                     else -> SettingsTab(state, viewModel)
                 }

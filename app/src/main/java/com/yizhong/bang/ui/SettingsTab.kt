@@ -1,7 +1,6 @@
 package com.yizhong.bang.ui
 
 import android.os.Build
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,11 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,8 +29,6 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 fun SettingsTab(state: UiState, viewModel: MainViewModel) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val colors = MiuixTheme.colorScheme
-    val context = LocalContext.current
-    var versionTaps by remember { mutableIntStateOf(0) }
 
     LazyColumn(
         state = rememberLazyListState(),
@@ -99,7 +92,7 @@ fun SettingsTab(state: UiState, viewModel: MainViewModel) {
                 )
                 BasicComponent(
                     title = "缓存",
-                    summary = "考试清单与成绩单各缓存 10 分钟",
+                    summary = "本次会话内一直保留，点右上角刷新才更新",
                 )
                 BasicComponent(
                     title = "退出登录",
@@ -119,19 +112,6 @@ fun SettingsTab(state: UiState, viewModel: MainViewModel) {
                 BasicComponent(
                     title = "版本",
                     summary = "v${BuildConfig.VERSION_NAME}",
-                    onClick = {
-                        versionTaps += 1
-                        if (versionTaps >= 7) {
-                            versionTaps = 0
-                            val next = !settings.gold
-                            viewModel.toggleGold()
-                            Toast.makeText(
-                                context,
-                                if (next) "隐藏光环已开启" else "光环收起来了",
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                        }
-                    },
                 )
                 BasicComponent(
                     title = "设计参考",

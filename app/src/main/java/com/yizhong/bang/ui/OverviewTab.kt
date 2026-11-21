@@ -1,7 +1,6 @@
 package com.yizhong.bang.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,7 +33,7 @@ import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 @Composable
-fun OverviewTab(state: UiState, viewModel: MainViewModel, gold: Boolean) {
+fun OverviewTab(state: UiState, viewModel: MainViewModel) {
     val sheet = state.sheet
     val listState = rememberLazyListState()
 
@@ -59,7 +57,7 @@ fun OverviewTab(state: UiState, viewModel: MainViewModel, gold: Boolean) {
             item { FilterCard(state, viewModel) }
         } else {
             item { SectionTitle(sheet.meta?.term ?: "班级总览") }
-            item { HeroCard(sheet, gold) }
+            item { HeroCard(sheet) }
             item { FilterCard(state, viewModel) }
             item { SectionTitle("各科均分 · 本班与年级") }
             item { ChartCard(sheet) }
@@ -69,19 +67,11 @@ fun OverviewTab(state: UiState, viewModel: MainViewModel, gold: Boolean) {
 }
 
 @Composable
-private fun HeroCard(sheet: Sheet, gold: Boolean) {
+private fun HeroCard(sheet: Sheet) {
     val colors = MiuixTheme.colorScheme
-    val goldColor = Color(0xFFE0A63C)
-    val border = if (gold) {
-        Modifier.border(1.5.dp, goldColor, RoundedCornerShape(20.dp))
-    } else {
-        Modifier
-    }
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(border),
+        modifier = Modifier.fillMaxWidth(),
         cornerRadius = 20.dp,
         insideMargin = PaddingValues(18.dp),
     ) {
@@ -199,9 +189,9 @@ private fun ChartCard(sheet: Sheet) {
                 color = colors.onSurfaceVariantSummary,
                 modifier = Modifier.weight(1f),
             )
-            LegendDot(colors.primary, "本班")
-            Spacer(Modifier.size(10.dp))
             LegendDot(colors.onSurfaceVariantSummary.copy(alpha = 0.4f), "年级")
+            Spacer(Modifier.size(10.dp))
+            LegendDot(colors.primary, "本班")
         }
         SubjectBars(
             rows = Stats.subjects(sheet),
@@ -246,7 +236,7 @@ private fun TipCard() {
     val colors = MiuixTheme.colorScheme
     SectionCard {
         Text(
-            text = "成绩只读，数据缓存 10 分钟。",
+            text = "成绩只读。取一次就留在本次会话里，点右上角刷新才会重新取。",
             fontSize = 12.sp,
             color = colors.onSurface,
         )
