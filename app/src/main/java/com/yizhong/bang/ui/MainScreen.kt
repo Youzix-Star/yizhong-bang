@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +50,14 @@ fun MainScreen(
     val scrollBehavior = MiuixScrollBehavior()
 
     BackHandler(enabled = isTop && tab != 0) { tab = 0 }
+
+    LaunchedEffect(tab) {
+        scrollBehavior.state?.let {
+            it.contentOffset = 0f
+            it.heightOffset = 0f
+            it.overscrollOffset = 0f
+        }
+    }
 
     val navItems = listOf(
         YzNavItem(MiuixIcons.Glass.HomeFill, "总览"),
