@@ -1,11 +1,13 @@
 package top.youzix.bang.ui
 
 import android.content.ContentValues
+import android.os.Build
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Environment
 import android.provider.MediaStore
+import java.io.File
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -289,7 +291,7 @@ fun AnswerSheetScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .background(Color.Black),
+                    .background(Color.White),
             ) {
                 when {
                     pages.isEmpty() && state.loading -> LoadingPanel(
@@ -794,6 +796,17 @@ private suspend fun savePages(
         val page = startPage + index + 1
         val safe = "${target.studentName}_${target.subject}_$page"
             .replace(Regex("[\\\\/:*?\"<>|]"), "_")
+        if (Build.VERSION.SDK_INT < 29) {
+            val dir = File(
+                context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                "一中帮",
+            ).apply { mkdirs() }
+            runCatching {
+                File(dir, "答题卡_$safe.jpg").writeBytes(bytes)
+                saved += 1
+            }
+            return@forEachIndexed
+        }
         val values = ContentValues().apply {
             put(MediaStore.Images.Media.DISPLAY_NAME, "答题卡_$safe.jpg")
             put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")

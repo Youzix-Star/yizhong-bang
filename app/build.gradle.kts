@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "top.youzix.bang"
-        minSdk = 33
+        minSdk = 26
         targetSdk = 37
         versionCode = (findProperty("versionCode") as String?)?.toIntOrNull() ?: 1
         versionName = findProperty("versionName") as String? ?: "1.0.0"

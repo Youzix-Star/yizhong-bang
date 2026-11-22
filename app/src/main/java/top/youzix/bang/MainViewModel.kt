@@ -2,6 +2,7 @@ package top.youzix.bang
 
 import android.app.Application
 import android.content.ContentValues
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.lifecycle.AndroidViewModel
@@ -358,6 +359,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val gradeCode = _state.value.grade
 
         return withContext(Dispatchers.IO) {
+            if (Build.VERSION.SDK_INT < 29) {
+                return@withContext ZipExportResult(false, "Android 10 以下暂不支持压缩包导出")
+            }
             val resolver = getApplication<Application>().contentResolver
             val safeName = target.studentName.replace(Regex("[\\\\/:*?\"<>|]"), "_")
             val displayName = "答题卡_${safeName}_全部科目.zip"
