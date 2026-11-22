@@ -2,118 +2,95 @@
 
 [![build](https://github.com/Youzix-Star/yizhong-bang/actions/workflows/build.yml/badge.svg)](https://github.com/Youzix-Star/yizhong-bang/actions/workflows/build.yml)
 
-城固一中「成绩查询分析系统」的安卓客户端：**OS4 玻璃风格**，只读，自己用。
+城固一中成绩查询系统的 Android 客户端，只读、自用。界面用 [Miuix](https://github.com/compose-miuix-ui/miuix) 的 OS4 / Glass 组件，部分编排参考 [InstallerX Revived](https://github.com/wxxsfxyzm/InstallerX-Revived)。
 
-学校那套 ASP.NET WebForms 页面又长又难用，所以之前让 AI 做过一个网页版。
-这一版把它搬成原生 Android，界面用 [Miuix](https://github.com/compose-miuix-ui/miuix)
-的 Glass / OS4 组件重做，OS4 的组件编排方式参考了
-[InstallerX Revived](https://github.com/wxxsfxyzm/InstallerX-Revived)。
+构建放在 GitHub Actions，本地不跑 Gradle。
 
-> 构建全部在 GitHub Actions 完成，本地不跑 Gradle。APK 见 Actions 的 `yizhong-bang-apk`。
+## 功能
 
----
+- 粘贴「成绩分析」链接登录，自动找到「试卷分析」入口。
+- 班级总览：班均分、年级差值、参考人数、偏科人次、九科对比。
+- 成绩列表：总分排序、姓名/考号筛选、逐科得分、班均、班位、级位。
+- 答题卡：按科目翻页查看，双指缩放；可保存单页/全部，也可把所有科目打包成 ZIP（内置 README）。
+- 主题：跟随系统 / 浅色 / 深色、动态取色、纯黑背景。
+- 启动自动检测 GitHub Release，弹窗提供蓝奏云、GitHub、备用云盘等更新源。
+- 首次启动需输入免责协议原文后才能进入。
+- 示例模式，数据已脱敏，不访问学校服务器。
 
-## 能做什么
+## 安装
 
-- **一条链接登录**：粘「成绩分析」链接即可；App 会自动从页面菜单里找到「试卷分析」入口，答题卡也能一起用。
-- **班级总览**：班均分、与年级均分的差值、参考人数、偏科人次，外加一句人话点评。
-- **九科对比**：每科按自己的满分归一化，本班 vs 年级并排看。
-- **成绩列表**：总分排序、按姓名 / 考号筛选、点开某一行看逐科得分、班均、位次。
-- **OS4 外观**：顶栏、底部胶囊导航、下拉筛选、弹层全部是玻璃材质。Miuix 的 blur 模块硬性要求 Android 13（API 33）及以上。
-- **主题**：跟随系统 / 浅色 / 深色、动态取色（Android 12+）、纯黑背景。
-- **示例模式**：58 名学生的姓名已替换成「学生01」这种占位符，不连学校服务器。
-- **答题卡**：在成绩明细里点科目，原生翻页查看答卷图片，支持双指缩放、保存到相册。
-- **只读**：没有任何写操作（答题卡只下载图片）。
+最新 Release：
 
-## 界面结构
+<https://github.com/Youzix-Star/yizhong-bang/releases/latest>
 
-```
-总览 tab ── 班均分 / 差值 / 三条指标 / 九科柱状图 / 筛选
-成绩 tab ── 搜索 + 学生卡片（点开展开九科明细，再点科目看答题卡）
-设置 tab ── 主题 / 动态取色 / 纯黑 / 退出登录 / 关于
-```
+也可以在 Actions 里下载 `yizhong-bang-apk`（debug）或 `yizhong-bang-release`（release）。
 
-## OS4 是怎么做的
-
-- 依赖 `top.yukonga.miuix.kmp:miuix-glass` 的 `GlassTopAppBar`、`GlassNavigationBar`、
-  `GlassDropdownPreference`、`GlassIconButton`，以及 `miuix-blur` 的 `LayerBackdrop`。
-- 页面内容录进一块 `LayerBackdrop`，顶栏和底栏采样它做真实的背景模糊；弹层再单独录一层，
-  避免采样到自己的弹窗。
-- 玻璃只用于「外壳」：顶栏、底部导航、下拉、动作按钮。内容卡片仍是 Miuix 的实色卡片，
-  这样中文长文本和成绩数字才清楚。
-- 运行时着色器要求 **Android 13（API 33）**；`minSdk` 因此也是 33。
-- 主题用 Miuix `ThemeController`，支持 Material You 动态色与 SPEC_2025 调色。
-
-## 怎么装
-
-1. 打开本仓库的 **Actions** → 最新的 `build` → 页面底部 `yizhong-bang-apk`。
-2. 下载、解压，得到 `app-debug.apk`，在手机上安装（需要允许「安装未知来源应用」）。
-3. 打开 App，粘「成绩分析」那条链接，点「进入」；答题卡的试卷分析会话会自动建立。
-4. 只想看排版：点「先看看示例」。
-
-命令行下载（需要 `gh`）：
-
-```bash
-gh run download --repo Youzix-Star/yizhong-bang --name yizhong-bang-apk
-```
+Release 使用仓库 Secrets 中的签名构建；签名文件不入库。
 
 ## 构建
 
-只有一条路：GitHub Actions（[.github/workflows/build.yml](.github/workflows/build.yml)）。
+只走 GitHub Actions：[.github/workflows/build.yml](.github/workflows/build.yml)
 
-- JDK 25 + Android SDK 37 + Gradle 9.9.1 + AGP 9.5.1
-- 先跑 `testDebugUnitTest`，再 `assembleDebug`
-- 产物：`app/build/outputs/apk/debug/app-debug.apk`
-- 版本号由 run number 注入，形如 `1.0.42`
+- JDK 25、Android SDK 37、Gradle 9.9.1、AGP 9.5.1
+- 跑 `testDebugUnitTest assembleDebug`，有签名 Secrets 时再跑 `assembleRelease`
+- 版本号由 run number 注入，形如 `1.0.53`
 
-本地构建不是设计目标；如果真要跑，需要同样的 JDK / SDK，并自行承担环境差异。
+## 兼容性
+
+- `minSdk 26`（Android 8）。
+- 玻璃/模糊效果需要 Android 13；低版本自动退回普通 Miuix 外观。
+- 答题卡保存到相册需要 Android 10；旧系统保存到应用外部目录。
+- ZIP 导出需要 Android 10 及以上。
 
 ## 目录
 
 ```
 app/src/main/java/top/youzix/bang/
-├── MainActivity.kt          入口、主题、采样层
-├── MainViewModel.kt         会话与取数状态
+├── MainActivity.kt
+├── MainViewModel.kt
 ├── data/
-│   ├── SchoolClient.kt      cookie + __VIEWSTATE + postback
-│   ├── SheetParser.kt       导出 HTML → Sheet
-│   ├── Html.kt              表单 / 下拉框 / 实体解析
-│   ├── GradeRepository.kt   会话内缓存（点刷新才更新）
-│   ├── AnswerSheetRepository.kt 试卷分析会话 + 答卷图片
-│   ├── Stats.kt             差值、点评、筛选排序
-│   └── DemoData.kt          示例数据
+│   ├── SchoolClient.kt
+│   ├── SheetParser.kt
+│   ├── Html.kt
+│   ├── GradeRepository.kt
+│   ├── AnswerSheetRepository.kt
+│   ├── UpdateChecker.kt
+│   ├── Stats.kt
+│   └── DemoData.kt
 └── ui/
-    ├── Theme.kt             Miuix ThemeController
-    ├── Host.kt              OS4 顶栏 / 底栏 / 弹层编排
-    ├── GateScreen.kt        粘链接入口
-    ├── MainScreen.kt        三个 tab 的壳
-    ├── OverviewTab.kt       总览
-    ├── ScoresTab.kt         成绩列表（含答题卡入口）
-    ├── AnswerSheetScreen.kt 答题卡查看 / 保存
-    └── SettingsTab.kt       设置
+    ├── Theme.kt
+    ├── Host.kt
+    ├── AppNav.kt
+    ├── GateScreen.kt
+    ├── AgreementScreen.kt
+    ├── MainScreen.kt
+    ├── OverviewTab.kt
+    ├── ScoresTab.kt
+    ├── AnswerSheetScreen.kt
+    ├── SettingsTab.kt
+    ├── AboutScreen.kt
+    └── LicenseScreen.kt
 ```
 
-## 隐私与安全
+## 隐私
 
-- 链接里的 `token` 就是登录凭证。App 只在内存里用它，**不写日志、不落盘、不上传**。
-- App 只从这台手机直连学校服务器（HTTP，学校那边本来就没 HTTPS），没有中转服务器。
-- 学校返回的是一个班 58 名学生的姓名、考号、逐科成绩和排名；答题卡里还有手写答案。**只适合自己用，别公开部署、别分享链接。**
-- 仓库里的示例数据已脱敏。
-- 没有实现「账号密码登录」：学校那套还需要验证码，属于没实测过的路径，不如粘链接稳。
+- 登录链接里的 token 只存在内存，不写日志、不落盘、不上传。
+- App 直接连接学校服务器，没有中转。
+- 查询结果包含学生姓名、考号、成绩和答题卡图片，只适合自己使用；不要公开部署或分享带 token 的链接。
+- 仓库中的示例数据已脱敏。
 
 ## 已知限制
 
-- 只做了「学生成绩通知单」和「学生答卷查询」；「历次成绩跟踪」还没接。
-- 答题卡使用从「成绩分析」页面菜单里自动提取的「试卷分析」入口；如果你粘的是不带菜单的裸 SSQ 页面，答题卡会绑定失败，换回「成绩分析」入口即可。
-- 答题卡图片地址里的 `testImageCode` 目前内置的是 **2026-2027 上学期期中** 的模板；换考试后需要按新样张更新模板。
-- 会话在内存里，杀进程后要重新粘一次链接。
-- 学校 `token` 过期后需要重新从浏览器复制。
-- 只支持 Android 13 及以上（Miuix blur 的硬性要求）。
+- 只支持「学生成绩通知单」和「学生答卷查询」。
+- 答题卡的图片模板目前对应 2026-2027 上学期期中；换考试后需要更新模板。
+- 会话只存在内存，杀进程后要重新粘贴链接。
+- 学校 token 过期后需要重新从浏览器复制。
+- 没有做账号密码登录（学校需要验证码）。
 
-## 参考与许可
+## 许可
 
-- **InstallerX Revived**（GPL-3.0）：OS4 玻璃界面的组件编排参考并改编自该项目。
-- **Miuix**（Apache-2.0）：Compose 组件、玻璃材质、模糊与运行时着色器。
-- **HyperOS 4 / MIUI**：仅视觉参考，无隶属关系。
+- InstallerX Revived：GPL-3.0，OS4 界面编排与部分实现参考。
+- Miuix：Apache-2.0，Compose 组件、玻璃与模糊。
+- HyperOS 4 / MIUI：仅视觉参考，无隶属关系。
 
-本项目以 **GPL-3.0** 发布，见 [LICENSE](LICENSE) 与 [NOTICE](NOTICE)。
+本项目以 GPL-3.0 发布，见 [LICENSE](LICENSE)。
