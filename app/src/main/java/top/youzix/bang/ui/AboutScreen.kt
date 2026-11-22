@@ -28,7 +28,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -38,6 +41,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import top.youzix.bang.BuildConfig
+import top.youzix.bang.data.UpdateChecker
+import top.youzix.bang.data.UpdateInfo
 import top.youzix.bang.ui.effect.BgEffectBackground
 import top.yukonga.miuix.kmp.basic.BasicComponent
 import top.yukonga.miuix.kmp.basic.Card
@@ -45,10 +50,13 @@ import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.SmallTitle
 import top.yukonga.miuix.kmp.basic.Text
+import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.ChevronBackward
 import top.yukonga.miuix.kmp.icon.extended.Link
+import kotlinx.coroutines.launch
 import top.yukonga.miuix.kmp.theme.MiuixTheme
+import top.yukonga.miuix.kmp.window.WindowDialog
 
 @Composable
 fun AboutScreen(
@@ -59,6 +67,11 @@ fun AboutScreen(
     val context = LocalContext.current
     val listState = rememberLazyListState()
     val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+    val scope = rememberCoroutineScope()
+    var checkingUpdate by remember { mutableStateOf(false) }
+    var manualUpdate by remember { mutableStateOf<UpdateInfo?>(null) }
+    var upToDate by remember { mutableStateOf(false) }
+    var updateError by remember { mutableStateOf<String?>(null) }
 
     val scrollProgress by remember {
         derivedStateOf {
@@ -127,6 +140,29 @@ fun AboutScreen(
                                         context,
                                         "https://github.com/Youzix-Star/yizhong-bang/actions",
                                     )
+                                },
+                            )
+                            BasicComponent(
+                                title = "检查更新",
+                                summary = if (checkingUpdate) "正在检查…" else "手动检查 GitHub Release",
+                                onClick = {
+                                    if (!checkingUpdate) {
+                                        checkingUpdate = true
+                                        scope.launch {
+                                            UpdateChecker.checkResult()
+                                                .onSuccess { info ->
+                                                    if (info != null) {
+                                                        manualUpdate = info
+                                                    } else {
+                                                        upToDate = true
+                                                    }
+                                                }
+                                                .onFailure {
+                                                    updateError = it.message ?: "检查更新失败"
+                                                }
+                                            checkingUpdate = false
+                                        }
+                                    }
                                 },
                             )
                             BasicComponent(
@@ -212,6 +248,44 @@ fun AboutScreen(
                     }
                 }
             }
+        }
+    }
+
+    manualUpdate?.let { info ->
+        UpdateDialog(info = info, onDismiss = { manualUpdate = null })
+    }
+    if (upToDate) {
+        WindowDialog(
+            show = true,
+            title = "检查更新",
+            summary = "已是最新版本 v${BuildConfig.VERSION_NAME}",
+            onDismissRequest = { upToDate = false },
+            onDismissFinished = { upToDate = false },
+        ) {
+            TextButton(
+                text = "好",
+                onClick = { upToDate = false },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 8.dp),
+            )
+        }
+    }
+    updateError?.let { message ->
+        WindowDialog(
+            show = true,
+            title = "检查更新失败",
+            summary = message,
+            onDismissRequest = { updateError = null },
+            onDismissFinished = { updateError = null },
+        ) {
+            TextButton(
+                text = "好",
+                onClick = { updateError = null },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 8.dp),
+            )
         }
     }
 }

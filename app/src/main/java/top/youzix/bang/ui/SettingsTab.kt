@@ -26,6 +26,7 @@ import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.preference.ArrowPreference
 import top.yukonga.miuix.kmp.preference.SwitchPreference
 import top.yukonga.miuix.kmp.theme.MiuixTheme
+import top.yukonga.miuix.kmp.utils.overScrollVertical
 
 @Composable
 fun SettingsTab(
@@ -37,7 +38,9 @@ fun SettingsTab(
 
     LazyColumn(
         state = rememberLazyListState(),
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .overScrollVertical(),
         contentPadding = PaddingValues(bottom = 104.dp),
     ) {
         item { Spacer(Modifier.height(4.dp)) }

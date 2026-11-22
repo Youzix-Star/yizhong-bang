@@ -20,7 +20,9 @@ object UpdateChecker {
         .readTimeout(8, TimeUnit.SECONDS)
         .build()
 
-    suspend fun check(): UpdateInfo? = withContext(Dispatchers.IO) {
+    suspend fun check(): UpdateInfo? = checkResult().getOrNull()
+
+    suspend fun checkResult(): Result<UpdateInfo?> = withContext(Dispatchers.IO) {
         runCatching {
             val request = Request.Builder()
                 .url("https://api.github.com/repos/Youzix-Star/yizhong-bang/releases/latest")
@@ -39,7 +41,7 @@ object UpdateChecker {
                         .ifBlank { "https://github.com/Youzix-Star/yizhong-bang/releases" },
                 )
             }
-        }.getOrNull()
+        }
     }
 
     private fun isNewer(latest: String, current: String): Boolean {

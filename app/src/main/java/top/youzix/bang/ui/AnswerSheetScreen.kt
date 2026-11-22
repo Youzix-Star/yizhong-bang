@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
@@ -288,7 +289,7 @@ fun AnswerSheetScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .background(colors.surfaceContainer),
+                    .background(Color.Black),
             ) {
                 when {
                     pages.isEmpty() && state.loading -> LoadingPanel(
@@ -313,8 +314,8 @@ fun AnswerSheetScreen(
                         HorizontalPager(
                             state = pagerState,
                             modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
-                            pageSpacing = 10.dp,
+                            contentPadding = PaddingValues(vertical = 8.dp),
+                            pageSpacing = 0.dp,
                             beyondViewportPageCount = 1,
                         ) { page ->
                             ZoomableAnswer(
