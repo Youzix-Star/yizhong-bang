@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,10 +20,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import top.youzix.bang.data.UpdateChecker
+import top.youzix.bang.data.UpdateInfo
 import top.youzix.bang.ui.AgreementScreen
 import top.youzix.bang.ui.AppNavHost
 import top.youzix.bang.ui.GateScreen
 import top.youzix.bang.ui.MiuixHost
+import top.youzix.bang.ui.UpdateDialog
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.youzix.bang.ui.YzTheme
 import top.youzix.bang.ui.pageBackdropModifier
@@ -38,6 +42,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             var agreed by remember {
                 mutableStateOf(agreementPrefs.getBoolean("accepted_v1", false))
+            }
+            var updateInfo by remember { mutableStateOf<UpdateInfo?>(null) }
+            var updateChecked by remember { mutableStateOf(false) }
+
+            LaunchedEffect(agreed) {
+                if (agreed && !updateChecked) {
+                    updateChecked = true
+                    updateInfo = UpdateChecker.check()
+                }
             }
             val viewModel: MainViewModel = viewModel(
                 factory = viewModelFactory {
@@ -92,6 +105,9 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
+                }
+                updateInfo?.let { info ->
+                    UpdateDialog(info = info, onDismiss = { updateInfo = null })
                 }
             }
         }
