@@ -155,8 +155,7 @@ private fun FilterCard(state: UiState, viewModel: MainViewModel) {
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        cornerRadius = 20.dp,
-        insideMargin = PaddingValues(vertical = 4.dp),
+        cornerRadius = 16.dp,
     ) {
         YzSpinnerPreference(
             items = grades.map { DropdownItem(title = it.label) },
