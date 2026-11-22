@@ -71,7 +71,7 @@ gh run download --repo Youzix-Star/yizhong-bang --name yizhong-bang-apk
 ## 目录
 
 ```
-app/src/main/java/com/yizhong/bang/
+app/src/main/java/top/youzix/bang/
 ├── MainActivity.kt          入口、主题、采样层
 ├── MainViewModel.kt         会话与取数状态
 ├── data/

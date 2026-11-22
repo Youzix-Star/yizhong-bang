@@ -5,12 +5,12 @@ plugins {
 }
 
 android {
-    namespace = "com.yizhong.bang"
+    namespace = "top.youzix.bang"
     compileSdk = 37
     compileSdkMinor = 2
 
     defaultConfig {
-        applicationId = "com.yizhong.bang"
+        applicationId = "top.youzix.bang"
         minSdk = 33
         targetSdk = 37
         versionCode = (findProperty("versionCode") as String?)?.toIntOrNull() ?: 1
