@@ -42,8 +42,8 @@ import top.yukonga.miuix.kmp.basic.BasicComponent
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.DropdownItem
 import top.yukonga.miuix.kmp.basic.Text
-import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.theme.MiuixTheme
+import top.yukonga.miuix.kmp.utils.PressFeedbackType
 
 @Composable
 fun OverviewTab(state: UiState, viewModel: MainViewModel) {
@@ -285,34 +285,34 @@ private fun HitokotoCard() {
         loading = false
     }
 
-    SectionCard {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        cornerRadius = 20.dp,
+        insideMargin = PaddingValues(18.dp),
+        pressFeedbackType = PressFeedbackType.Sink,
+        showIndication = true,
+        onClick = { if (!loading) reload += 1 },
+    ) {
         Text(
             text = quote,
             fontSize = 12.5.sp,
             lineHeight = 19.sp,
             color = colors.onSurface,
         )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (source.isNotBlank()) {
+        if (source.isNotBlank()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.End,
+            ) {
                 Text(
                     text = "—— $source",
                     fontSize = 11.sp,
                     color = colors.onSurfaceVariantSummary,
-                    modifier = Modifier.weight(1f),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.End,
                 )
-            } else {
-                Spacer(Modifier.weight(1f))
             }
-            TextButton(
-                text = if (loading) "获取中…" else "换一句",
-                enabled = !loading,
-                onClick = { reload += 1 },
-            )
         }
     }
 }

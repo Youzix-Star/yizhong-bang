@@ -1,6 +1,9 @@
 package com.yizhong.bang
 
 import android.app.Application
+import android.content.ContentValues
+import android.os.Environment
+import android.provider.MediaStore
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.yizhong.bang.data.AnswerSheetRepository
@@ -12,7 +15,15 @@ import com.yizhong.bang.data.Meta
 import com.yizhong.bang.data.SettingsStore
 import com.yizhong.bang.data.Sheet
 import com.yizhong.bang.data.Student
+import java.io.BufferedOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -52,6 +63,11 @@ data class AnswerState(
     val loading: Boolean = false,
     val pages: List<ByteArray> = emptyList(),
     val error: String? = null,
+)
+
+data class ZipExportResult(
+    val ok: Boolean,
+    val message: String,
 )
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -331,6 +347,105 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val student = _state.value.sheet?.students?.firstOrNull { it.no == target.studentNo } ?: return
         openAnswerSheet(student, target.subjectIndex)
     }
+
+    suspend fun exportAllAnswerSheets(): ZipExportResult {
+        val target = _answer.value.target
+            ?: return ZipExportResult(false, "还没有打开答题卡")
+        val sheet = _state.value.sheet
+            ?: return ZipExportResult(false, "成绩还没加载好")
+        val subjects = sheet.subjects
+        if (subjects.isEmpty()) return ZipExportResult(false, "这个年级没有科目")
+        val gradeCode = _state.value.grade
+
+        return withContext(Dispatchers.IO) {
+            val resolver = getApplication<Application>().contentResolver
+            val safeName = target.studentName.replace(Regex("[\\\\/:*?\"<>|]"), "_")
+            val displayName = "答题卡_${safeName}_全部科目.zip"
+            val values = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
+                put(MediaStore.MediaColumns.MIME_TYPE, "application/zip")
+                put(
+                    MediaStore.MediaColumns.RELATIVE_PATH,
+                    Environment.DIRECTORY_DOWNLOADS + "/一中帮",
+                )
+                put(MediaStore.MediaColumns.IS_PENDING, 1)
+            }
+            val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+                ?: return@withContext ZipExportResult(false, "无法在下载目录创建压缩包")
+
+            var pageCount = 0
+            val failed = mutableListOf<String>()
+            try {
+                resolver.openOutputStream(uri)?.use { output ->
+                    ZipOutputStream(BufferedOutputStream(output)).use { zip ->
+                        subjects.forEachIndexed { index, subject ->
+                            var subjectPages = 0
+                            try {
+                                answerRepo.loadPages(
+                                    gradeCode = gradeCode,
+                                    studentNo = target.studentNo,
+                                    studentName = target.studentName,
+                                    subject = subject,
+                                    subjectIndex = index,
+                                    className = target.className,
+                                ).collect { bytes ->
+                                    val page = subjectPages + 1
+                                    val entryName = "${safePart(subject)}/第${"%02d".format(page)}页.jpg"
+                                    zip.putNextEntry(ZipEntry(entryName))
+                                    zip.write(bytes)
+                                    zip.closeEntry()
+                                    subjectPages += 1
+                                    pageCount += 1
+                                }
+                            } catch (e: Exception) {
+                                // 这个科目取不到就继续导出其他科目。
+                            }
+                            if (subjectPages == 0) failed += subject
+                        }
+
+                        val time = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA)
+                            .format(Date())
+                        val readme = buildString {
+                            appendLine("一中帮 · 答题卡导出")
+                            appendLine("学生：${target.studentName}")
+                            appendLine("班级：${target.className}")
+                            appendLine("导出时间：$time")
+                            appendLine()
+                            appendLine("目录说明：每个科目一个文件夹，里面是按页保存的 JPEG。")
+                            appendLine("科目：${subjects.joinToString("、")}")
+                            appendLine("成功导出：${subjects.size - failed.size} 科，共 $pageCount 页")
+                            if (failed.isNotEmpty()) {
+                                appendLine("未导出：${failed.joinToString("、")}")
+                            }
+                        }
+                        zip.putNextEntry(ZipEntry("README.txt"))
+                        zip.write(readme.toByteArray(Charsets.UTF_8))
+                        zip.closeEntry()
+                    }
+                } ?: error("无法写入压缩包")
+
+                if (pageCount == 0) {
+                    resolver.delete(uri, null, null)
+                    return@withContext ZipExportResult(false, "没有取到任何答题卡")
+                }
+
+                values.clear()
+                values.put(MediaStore.MediaColumns.IS_PENDING, 0)
+                resolver.update(uri, values, null, null)
+                val suffix = if (failed.isEmpty()) "" else "，${failed.size} 科未取到"
+                ZipExportResult(
+                    true,
+                    "已保存 ${subjects.size - failed.size} 科 / $pageCount 页到下载目录$suffix",
+                )
+            } catch (e: Exception) {
+                runCatching { resolver.delete(uri, null, null) }
+                ZipExportResult(false, e.message ?: "导出压缩包失败")
+            }
+        }
+    }
+
+    private fun safePart(text: String): String =
+        text.replace(Regex("[\\\\/:*?\"<>|]"), "_").ifBlank { "未命名" }
 
     fun setTheme(theme: AppTheme) = settingsStore.setTheme(theme)
     fun setDynamicColor(enabled: Boolean) = settingsStore.setDynamicColor(enabled)

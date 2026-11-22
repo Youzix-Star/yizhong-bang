@@ -134,15 +134,11 @@ fun AboutScreen(
                                 summary = "使用的开源项目与许可证",
                                 onClick = onOpenLicenses,
                             )
-                            BasicComponent(
-                                title = "设计参考",
-                                summary = "HyperOS 4 · Miuix · InstallerX Revived",
-                            )
                         }
                     }
                 item {
                     Text(
-                        text = "数据只在本机使用。",
+                        text = "关注塔菲谢谢喵",
                         fontSize = 11.sp,
                         color = colors.onSurfaceVariantSummary,
                         textAlign = TextAlign.Center,

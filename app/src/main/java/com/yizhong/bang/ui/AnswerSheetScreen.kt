@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yizhong.bang.AnswerState
+import com.yizhong.bang.ZipExportResult
 import com.yizhong.bang.AnswerTarget
 import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
@@ -73,10 +74,11 @@ import top.yukonga.miuix.kmp.basic.TabRow
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.icon.MiuixIcons
-import top.yukonga.miuix.kmp.icon.extended.Add
+import top.yukonga.miuix.kmp.icon.extended.ExpandLess
+import top.yukonga.miuix.kmp.icon.extended.FileDownloads
 import top.yukonga.miuix.kmp.icon.extended.ChevronBackward
 import top.yukonga.miuix.kmp.icon.extended.ChevronForward
-import top.yukonga.miuix.kmp.icon.extended.ZoomOut
+import top.yukonga.miuix.kmp.icon.extended.ExpandMore
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 @Composable
@@ -84,6 +86,7 @@ fun AnswerSheetScreen(
     state: AnswerState,
     subjects: List<String>,
     onSelectSubject: (Int) -> Unit,
+    onExportZip: suspend () -> ZipExportResult,
     onClose: () -> Unit,
     onRetry: () -> Unit,
 ) {
@@ -100,6 +103,7 @@ fun AnswerSheetScreen(
     var offset by remember { mutableStateOf(Offset.Zero) }
     var stageSize by remember { mutableStateOf(IntSize.Zero) }
     var saving by remember { mutableStateOf(false) }
+    var exporting by remember { mutableStateOf(false) }
 
     val view = LocalView.current
     DisposableEffect(view) {
@@ -234,8 +238,36 @@ fun AnswerSheetScreen(
                             size = 20.dp,
                             strokeWidth = 2.dp,
                             orbitingDotSize = 2.dp,
-                            modifier = Modifier.padding(end = 10.dp),
+                            modifier = Modifier.padding(end = 8.dp),
                         )
+                    }
+                    IconButton(
+                        onClick = {
+                            if (!exporting) {
+                                exporting = true
+                                scope.launch {
+                                    val result = onExportZip()
+                                    exporting = false
+                                    snackbar.showSnackbar(result.message)
+                                }
+                            }
+                        },
+                        enabled = !exporting,
+                    ) {
+                        if (exporting) {
+                            InfiniteProgressIndicator(
+                                color = colors.primary,
+                                size = 20.dp,
+                                strokeWidth = 2.dp,
+                                orbitingDotSize = 2.dp,
+                            )
+                        } else {
+                            Icon(
+                                imageVector = MiuixIcons.FileDownloads,
+                                contentDescription = "保存全部科目压缩包",
+                                modifier = Modifier.size(22.dp),
+                            )
+                        }
                     }
                 },
             )
@@ -519,13 +551,29 @@ private fun PagePill(
                     modifier = Modifier.size(20.dp),
                 )
             }
-            Text(
-                text = "${current + 1} / $total",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
-                color = colors.onSurface,
-                modifier = Modifier.padding(horizontal = 2.dp),
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "${current + 1}",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = colors.onSurface,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.width(16.dp),
+                )
+                Text(
+                    text = "/",
+                    fontSize = 12.sp,
+                    color = colors.onSurfaceVariantSummary,
+                )
+                Text(
+                    text = "$total",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = colors.onSurface,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.width(16.dp),
+                )
+            }
             IconButton(
                 onClick = onNext,
                 enabled = current < total - 1,
@@ -574,7 +622,7 @@ private fun AnswerBottomBar(
                 minHeight = 40.dp,
             ) {
                 Icon(
-                    imageVector = MiuixIcons.ZoomOut,
+                    imageVector = MiuixIcons.ExpandMore,
                     contentDescription = "缩小",
                     modifier = Modifier.size(20.dp),
                 )
@@ -597,7 +645,7 @@ private fun AnswerBottomBar(
                 minHeight = 40.dp,
             ) {
                 Icon(
-                    imageVector = MiuixIcons.Add,
+                    imageVector = MiuixIcons.ExpandLess,
                     contentDescription = "放大",
                     modifier = Modifier.size(20.dp),
                 )
