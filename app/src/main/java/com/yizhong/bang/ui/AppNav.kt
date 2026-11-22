@@ -41,10 +41,11 @@ fun AppNavHost(state: UiState, viewModel: MainViewModel, scope: MiuixComponentSc
     val backStack = rememberNavBackStack<YzRoute>(YzRoute.Main)
     val activity = LocalContext.current as? Activity
     val colors = MiuixTheme.colorScheme
-    val effects = remember(colors.surface) {
+    val navCornerRadius = rememberDeviceCornerRadius(defaultRadius = 0.dp)
+    val effects = remember(colors.surface, navCornerRadius) {
         NavDisplayEffects(
             enableCornerClip = true,
-            cornerClipRadius = 32.dp,
+            cornerClipRadius = navCornerRadius,
             cornerClipMode = NavCornerClipMode.Leading,
             dimAmount = 0.5f,
             backdropColor = colors.surface,
