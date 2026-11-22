@@ -180,7 +180,7 @@ fun SectionCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         cornerRadius = 20.dp,
-        insideMargin = androidx.compose.foundation.layout.PaddingValues(18.dp),
+        insideMargin = androidx.compose.foundation.layout.PaddingValues(16.dp),
         content = content,
     )
 }

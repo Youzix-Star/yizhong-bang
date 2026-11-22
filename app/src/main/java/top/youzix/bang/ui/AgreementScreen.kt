@@ -47,12 +47,12 @@ fun AgreementScreen(onAccept: () -> Unit) {
             .fillMaxSize()
             .systemBarsPadding()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 24.dp),
+            .padding(horizontal = 16.dp, vertical = 24.dp),
         contentAlignment = Alignment.TopCenter,
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Card(
-                insideMargin = androidx.compose.foundation.layout.PaddingValues(22.dp),
+                insideMargin = androidx.compose.foundation.layout.PaddingValues(16.dp),
             ) {
                 Text(
                     text = "使用前请阅读",

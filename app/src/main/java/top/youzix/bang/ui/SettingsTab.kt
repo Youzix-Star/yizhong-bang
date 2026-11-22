@@ -9,12 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -27,10 +23,10 @@ import top.youzix.bang.data.AppTheme
 import top.yukonga.miuix.kmp.basic.BasicComponent
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
-import top.yukonga.miuix.kmp.basic.Switch
+import top.yukonga.miuix.kmp.basic.DropdownItem
 import top.yukonga.miuix.kmp.basic.Text
-import top.yukonga.miuix.kmp.window.WindowDialog
 import top.yukonga.miuix.kmp.preference.ArrowPreference
+import top.yukonga.miuix.kmp.preference.SwitchPreference
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 
@@ -42,12 +38,6 @@ fun SettingsTab(
     onOpenAbout: () -> Unit,
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
-    var showThemeDialog by remember { mutableStateOf(false) }
-    val themeLabel = when (settings.theme) {
-        AppTheme.System -> "跟随系统"
-        AppTheme.Light -> "浅色"
-        AppTheme.Dark -> "深色"
-    }
 
     LazyColumn(
         state = rememberLazyListState(),
@@ -66,12 +56,23 @@ fun SettingsTab(
                     .padding(horizontal = 12.dp)
                     .padding(bottom = 12.dp),
             ) {
-                ArrowPreference(
+                YzSpinnerPreference(
+                    items = AppTheme.values().map {
+                        DropdownItem(
+                            title = when (it) {
+                                AppTheme.System -> "跟随系统"
+                                AppTheme.Light -> "浅色"
+                                AppTheme.Dark -> "深色"
+                            },
+                        )
+                    },
+                    selectedIndex = settings.theme.ordinal,
                     title = "主题",
-                    summary = themeLabel,
-                    onClick = { showThemeDialog = true },
+                    onSelectedIndexChange = { index ->
+                        AppTheme.values().getOrNull(index)?.let(viewModel::setTheme)
+                    },
                 )
-                SettingsSwitch(
+                SwitchPreference(
                     title = "动态取色",
                     summary = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         "跟随壁纸主色"
@@ -82,7 +83,7 @@ fun SettingsTab(
                     enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
                     onCheckedChange = viewModel::setDynamicColor,
                 )
-                SettingsSwitch(
+                SwitchPreference(
                     title = "纯黑背景",
                     summary = "深色模式下生效",
                     checked = settings.amoled,
@@ -107,28 +108,6 @@ fun SettingsTab(
             }
         }
 
-        item { SettingsSectionTitle("答题卡") }
-        item {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
-                    .padding(bottom = 12.dp),
-            ) {
-                BasicComponent(
-                    title = "连接状态",
-                    summary = if (state.answerBound) "已绑定" else "未绑定",
-                )
-                val answerError = state.answerError
-                if (!answerError.isNullOrBlank()) {
-                    BasicComponent(
-                        title = "上次错误",
-                        summary = answerError,
-                    )
-                }
-            }
-        }
-
         item { SettingsSectionTitle("其他") }
         item {
             Card(
@@ -145,55 +124,6 @@ fun SettingsTab(
             }
         }
     }
-    if (showThemeDialog) {
-        WindowDialog(
-            show = true,
-            title = "主题",
-            summary = "选择外观",
-            onDismissRequest = { showThemeDialog = false },
-            onDismissFinished = { showThemeDialog = false },
-        ) {
-            Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
-                AppTheme.values().forEach { theme ->
-                    val label = when (theme) {
-                        AppTheme.System -> "跟随系统"
-                        AppTheme.Light -> "浅色"
-                        AppTheme.Dark -> "深色"
-                    }
-                    BasicComponent(
-                        title = label,
-                        summary = if (theme == settings.theme) "当前" else null,
-                        onClick = {
-                            viewModel.setTheme(theme)
-                            showThemeDialog = false
-                        },
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SettingsSwitch(
-    title: String,
-    summary: String,
-    checked: Boolean,
-    enabled: Boolean = true,
-    onCheckedChange: (Boolean) -> Unit,
-) {
-    BasicComponent(
-        title = title,
-        summary = summary,
-        enabled = enabled,
-        endActions = {
-            Switch(
-                checked = checked,
-                onCheckedChange = { if (enabled) onCheckedChange(it) },
-                enabled = enabled,
-            )
-        },
-    )
 }
 
 @Composable

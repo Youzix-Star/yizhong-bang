@@ -92,7 +92,7 @@ private fun HeroCard(sheet: Sheet) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = 20.dp,
-        insideMargin = PaddingValues(18.dp),
+        insideMargin = PaddingValues(16.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -294,7 +294,7 @@ private fun HitokotoCard() {
     Card(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = 20.dp,
-        insideMargin = PaddingValues(18.dp),
+        insideMargin = PaddingValues(16.dp),
         pressFeedbackType = PressFeedbackType.Sink,
         showIndication = true,
         onClick = { if (!loading) reload += 1 },

@@ -188,37 +188,14 @@ fun YzSpinnerPreference(
     modifier: Modifier = Modifier,
     onSelectedIndexChange: (Int) -> Unit,
 ) {
-    val scope = LocalMiuixComponentScope.current
-    val plain = items.all {
-        it.enabled && it.icon == null && it.summary == null && it.children.isNullOrEmpty()
-    }
-    if (scope.useOs4 && plain) {
-        GlassDropdownPreference(
-            onSelectedIndexChange = { index ->
-                onSelectedIndexChange(index)
-                items.getOrNull(index)?.onClick?.invoke()
-            },
-            items = items.map { it.text },
-            selectedIndex = selectedIndex,
-            title = title,
-            backdrop = scope.pageBackdrop,
-            visuals = GlassPopupDefaults.visuals(style = GlassDefaults.style(YzTheme.isDark)),
-            modifier = modifier,
-            enabled = enabled,
-            showValue = true,
-            renderInRootScaffold = true,
-            summary = summary,
-        )
-    } else {
-        WindowSpinnerPreference(
-            items = items,
-            selectedIndex = selectedIndex,
-            title = title,
-            modifier = modifier,
-            summary = summary,
-            enabled = enabled,
-            showValue = true,
-            onSelectedIndexChange = onSelectedIndexChange,
-        )
-    }
+    WindowSpinnerPreference(
+        items = items,
+        selectedIndex = selectedIndex,
+        title = title,
+        modifier = modifier,
+        summary = summary,
+        enabled = enabled,
+        showValue = true,
+        onSelectedIndexChange = onSelectedIndexChange,
+    )
 }

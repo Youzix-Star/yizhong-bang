@@ -59,7 +59,7 @@ fun GateScreen(state: UiState, viewModel: MainViewModel) {
             .fillMaxSize()
             .systemBarsPadding()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 24.dp),
+            .padding(horizontal = 16.dp, vertical = 24.dp),
         contentAlignment = Alignment.TopCenter,
     ) {
         Column(
@@ -69,7 +69,7 @@ fun GateScreen(state: UiState, viewModel: MainViewModel) {
                 .padding(top = 32.dp),
         ) {
             Card(
-                insideMargin = androidx.compose.foundation.layout.PaddingValues(22.dp),
+                insideMargin = androidx.compose.foundation.layout.PaddingValues(16.dp),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LogoMark(54.dp)
