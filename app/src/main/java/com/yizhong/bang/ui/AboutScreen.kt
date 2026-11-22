@@ -140,7 +140,6 @@ fun AboutScreen(
                             )
                         }
                     }
-                }
                 item {
                     Text(
                         text = "数据只在本机使用。",
@@ -153,6 +152,7 @@ fun AboutScreen(
                     )
                 }
                 item { Spacer(Modifier.height(240.dp)) }
+                }
 
                 // 固定头部：滚动时淡出、缩小；内容从它下面滑过。
                 Column(
