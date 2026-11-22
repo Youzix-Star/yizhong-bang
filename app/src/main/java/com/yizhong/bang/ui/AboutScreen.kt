@@ -141,6 +141,18 @@ fun AboutScreen(
                         }
                     }
                 }
+                item {
+                    Text(
+                        text = "数据只在本机使用。",
+                        fontSize = 11.sp,
+                        color = colors.onSurfaceVariantSummary,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp),
+                    )
+                }
+                item { Spacer(Modifier.height(240.dp)) }
 
                 // 固定头部：滚动时淡出、缩小；内容从它下面滑过。
                 Column(

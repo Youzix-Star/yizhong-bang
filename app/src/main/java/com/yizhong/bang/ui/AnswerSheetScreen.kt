@@ -76,7 +76,7 @@ import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.Add
 import top.yukonga.miuix.kmp.icon.extended.ChevronBackward
 import top.yukonga.miuix.kmp.icon.extended.ChevronForward
-import top.yukonga.miuix.kmp.icon.extended.Remove
+import top.yukonga.miuix.kmp.icon.extended.ZoomOut
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 @Composable
@@ -574,7 +574,7 @@ private fun AnswerBottomBar(
                 minHeight = 40.dp,
             ) {
                 Icon(
-                    imageVector = MiuixIcons.Remove,
+                    imageVector = MiuixIcons.ZoomOut,
                     contentDescription = "缩小",
                     modifier = Modifier.size(20.dp),
                 )

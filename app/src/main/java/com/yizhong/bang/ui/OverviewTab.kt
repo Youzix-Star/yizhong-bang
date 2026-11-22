@@ -15,6 +15,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,6 +28,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONObject
 import com.yizhong.bang.MainViewModel
 import com.yizhong.bang.UiState
 import com.yizhong.bang.data.Sheet
@@ -30,6 +42,7 @@ import top.yukonga.miuix.kmp.basic.BasicComponent
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.DropdownItem
 import top.yukonga.miuix.kmp.basic.Text
+import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 @Composable
@@ -61,7 +74,7 @@ fun OverviewTab(state: UiState, viewModel: MainViewModel) {
             item { FilterCard(state, viewModel) }
             item { SectionTitle("各科均分 · 本班与年级") }
             item { ChartCard(sheet) }
-            item { TipCard() }
+            item { HitokotoCard() }
         }
     }
 }
@@ -231,21 +244,75 @@ private fun LegendDot(color: Color, text: String) {
     }
 }
 
+private val hitokotoClient = OkHttpClient.Builder()
+    .connectTimeout(8, TimeUnit.SECONDS)
+    .readTimeout(8, TimeUnit.SECONDS)
+    .build()
+
 @Composable
-private fun TipCard() {
+private fun HitokotoCard() {
     val colors = MiuixTheme.colorScheme
+    var quote by remember { mutableStateOf("从 Hitokoto 获取一言…") }
+    var source by remember { mutableStateOf("") }
+    var loading by remember { mutableStateOf(true) }
+    var reload by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(reload) {
+        loading = true
+        val result = withContext(Dispatchers.IO) {
+            runCatching {
+                val request = Request.Builder()
+                    .url("https://v1.hitokoto.cn/?encode=json")
+                    .header("User-Agent", "YiZhongBang/1.0 (Android)")
+                    .build()
+                hitokotoClient.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) error("HTTP ${response.code}")
+                    val body = response.body?.string() ?: error("empty body")
+                    val json = JSONObject(body)
+                    val text = json.optString("hitokoto").ifBlank { error("empty quote") }
+                    val from = json.optString("from").ifBlank { json.optString("from_who") }
+                    text to from
+                }
+            }.getOrNull()
+        }
+        if (result != null) {
+            quote = result.first
+            source = result.second
+        } else {
+            quote = "从 Hitokoto 获取一言失败，稍后再试。"
+            source = ""
+        }
+        loading = false
+    }
+
     SectionCard {
         Text(
-            text = "成绩只读。取一次就留在本次会话里，点右上角刷新才会重新取。",
-            fontSize = 12.sp,
+            text = quote,
+            fontSize = 12.5.sp,
+            lineHeight = 19.sp,
             color = colors.onSurface,
         )
-        Text(
-            text = "所有请求都从这台手机发往学校，会话只存在内存里；App 不统计、不外传。",
-            fontSize = 11.sp,
-            lineHeight = 16.sp,
-            color = colors.onSurfaceVariantSummary,
-            modifier = Modifier.padding(top = 4.dp),
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (source.isNotBlank()) {
+                Text(
+                    text = "—— $source",
+                    fontSize = 11.sp,
+                    color = colors.onSurfaceVariantSummary,
+                    modifier = Modifier.weight(1f),
+                )
+            } else {
+                Spacer(Modifier.weight(1f))
+            }
+            TextButton(
+                text = if (loading) "获取中…" else "换一句",
+                enabled = !loading,
+                onClick = { reload += 1 },
+            )
+        }
     }
 }
