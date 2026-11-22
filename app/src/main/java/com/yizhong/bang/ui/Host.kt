@@ -14,6 +14,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import top.yukonga.miuix.kmp.basic.DropdownItem
@@ -102,10 +103,12 @@ fun YzTopAppBar(
             largeTitle = title,
             subtitle = subtitle,
             backdrop = backdrop,
-            progressiveBlur = true,
+            progressiveBlur = false,
+            bandBrush = SolidColor(MiuixTheme.colorScheme.surface),
             bandOverhang = 0.dp,
             style = GlassDefaults.style(YzTheme.isDark),
             scrollBehavior = scrollBehavior,
+            backgroundAlpha = { if (hasContentScroll) 1f else 0f },
             actions = actions,
         )
     } else {
