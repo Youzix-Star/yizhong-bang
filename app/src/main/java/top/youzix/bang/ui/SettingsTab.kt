@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -21,10 +22,11 @@ import top.youzix.bang.UiState
 import top.youzix.bang.data.AppTheme
 import top.yukonga.miuix.kmp.basic.BasicComponent
 import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.DropdownItem
+import top.yukonga.miuix.kmp.basic.Switch
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.preference.ArrowPreference
-import top.yukonga.miuix.kmp.preference.SwitchPreference
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 
@@ -32,6 +34,7 @@ import top.yukonga.miuix.kmp.utils.overScrollVertical
 fun SettingsTab(
     state: UiState,
     viewModel: MainViewModel,
+    scrollBehavior: ScrollBehavior,
     onOpenAbout: () -> Unit,
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
@@ -40,7 +43,8 @@ fun SettingsTab(
         state = rememberLazyListState(),
         modifier = Modifier
             .fillMaxSize()
-            .overScrollVertical(),
+            .overScrollVertical()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         contentPadding = PaddingValues(bottom = 104.dp),
     ) {
         item { Spacer(Modifier.height(4.dp)) }
@@ -68,7 +72,7 @@ fun SettingsTab(
                         AppTheme.values().getOrNull(index)?.let(viewModel::setTheme)
                     },
                 )
-                SwitchPreference(
+                SettingsSwitch(
                     title = "动态取色",
                     summary = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         "跟随壁纸主色"
@@ -79,7 +83,7 @@ fun SettingsTab(
                     enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
                     onCheckedChange = viewModel::setDynamicColor,
                 )
-                SwitchPreference(
+                SettingsSwitch(
                     title = "纯黑背景",
                     summary = "深色模式下生效",
                     checked = settings.amoled,
@@ -142,6 +146,28 @@ fun SettingsTab(
             }
         }
     }
+}
+
+@Composable
+private fun SettingsSwitch(
+    title: String,
+    summary: String,
+    checked: Boolean,
+    enabled: Boolean = true,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    BasicComponent(
+        title = title,
+        summary = summary,
+        enabled = enabled,
+        endActions = {
+            Switch(
+                checked = checked,
+                onCheckedChange = { if (enabled) onCheckedChange(it) },
+                enabled = enabled,
+            )
+        },
+    )
 }
 
 @Composable

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -122,17 +121,19 @@ fun MainScreen(
             state.error?.let { message ->
                 ErrorBanner(message = message, onRetry = { viewModel.loadSheet(force = true) })
             }
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .nestedScroll(scrollBehavior.nestedScrollConnection),
-            ) {
+            Box(modifier = Modifier.weight(1f)) {
                 when (tab) {
-                    0 -> OverviewTab(state, viewModel)
-                    1 -> ScoresTab(state, viewModel, onAnswerSheet = onOpenAnswerSheet)
+                    0 -> OverviewTab(state, viewModel, scrollBehavior)
+                    1 -> ScoresTab(
+                        state = state,
+                        viewModel = viewModel,
+                        scrollBehavior = scrollBehavior,
+                        onAnswerSheet = onOpenAnswerSheet,
+                    )
                     else -> SettingsTab(
                         state = state,
                         viewModel = viewModel,
+                        scrollBehavior = scrollBehavior,
                         onOpenAbout = onOpenAbout,
                     )
                 }
