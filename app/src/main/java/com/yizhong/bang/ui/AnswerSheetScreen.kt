@@ -622,7 +622,7 @@ private fun AnswerBottomBar(
                 minHeight = 40.dp,
             ) {
                 Icon(
-                    imageVector = MiuixIcons.ExpandMore,
+                    imageVector = MiuixIcons.ExpandLess,
                     contentDescription = "缩小",
                     modifier = Modifier.size(20.dp),
                 )
@@ -645,7 +645,7 @@ private fun AnswerBottomBar(
                 minHeight = 40.dp,
             ) {
                 Icon(
-                    imageVector = MiuixIcons.ExpandLess,
+                    imageVector = MiuixIcons.ExpandMore,
                     contentDescription = "放大",
                     modifier = Modifier.size(20.dp),
                 )

@@ -22,6 +22,25 @@ android {
         buildConfig = true
     }
 
+    signingConfigs {
+        val storePath = System.getenv("RELEASE_KEYSTORE_PATH")
+        if (!storePath.isNullOrBlank() && file(storePath).exists()) {
+            create("release") {
+                storeFile = file(storePath)
+                storePassword = System.getenv("RELEASE_STORE_PASSWORD")
+                keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+                keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.findByName("release")
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_25
         targetCompatibility = JavaVersion.VERSION_25

@@ -21,3 +21,6 @@ app/release/
 # 系统
 .DS_Store
 Thumbs.db
+
+# 发布签名
+.signing/
