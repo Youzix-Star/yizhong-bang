@@ -211,7 +211,7 @@ fun AboutScreen(
                         modifier = Modifier.padding(top = 12.dp),
                     )
                     Text(
-                        text = "v${BuildConfig.VERSION_NAME} · 城固一中",
+                        text = "v${BuildConfig.VERSION_NAME} · 邦邦咔邦",
                         fontSize = 14.sp,
                         color = colors.onSurfaceVariantSummary,
                         textAlign = TextAlign.Center,

@@ -1,6 +1,7 @@
 package top.youzix.bang.ui
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,11 +23,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import top.youzix.bang.R
 import top.youzix.bang.data.SubjectRow
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.theme.MiuixTheme
@@ -66,6 +69,18 @@ fun LogoMark(size: Dp = 48.dp) {
         bar(0.445f, 0.51f, 0.25f, 0.92f)
         bar(0.65f, 0.42f, 0.34f, 1f)
     }
+}
+
+/** 应用图标（与桌面图标同一张图），用在引导页这类需要露出新图标的地方。 */
+@Composable
+fun AppIconMark(size: Dp = 54.dp) {
+    Image(
+        painter = painterResource(R.drawable.ic_launcher_foreground),
+        contentDescription = null,
+        modifier = Modifier
+            .size(size)
+            .clip(RoundedCornerShape(size * 0.28f)),
+    )
 }
 
 @Composable

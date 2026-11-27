@@ -72,7 +72,7 @@ fun GateScreen(state: UiState, viewModel: MainViewModel) {
                 insideMargin = androidx.compose.foundation.layout.PaddingValues(16.dp),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    LogoMark(54.dp)
+                    AppIconMark(54.dp)
                     Column(modifier = Modifier.padding(start = 14.dp)) {
                         Text(
                             text = "一中帮",
@@ -81,7 +81,7 @@ fun GateScreen(state: UiState, viewModel: MainViewModel) {
                             color = colors.onSurface,
                         )
                         Text(
-                            text = "城固一中 · 成绩查询",
+                            text = "邦邦咔邦",
                             fontSize = 12.sp,
                             color = colors.onSurfaceVariantSummary,
                             modifier = Modifier.padding(top = 2.dp),
