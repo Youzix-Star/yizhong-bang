@@ -44,6 +44,9 @@ import top.youzix.bang.BuildConfig
 import top.youzix.bang.data.UpdateChecker
 import top.youzix.bang.data.UpdateInfo
 import top.youzix.bang.ui.effect.BgEffectBackground
+import top.youzix.bang.ui.egg.EggController
+import top.youzix.bang.ui.egg.EggOverlay
+import top.youzix.bang.ui.egg.NoteBlockMark
 import top.yukonga.miuix.kmp.basic.BasicComponent
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
@@ -72,6 +75,7 @@ fun AboutScreen(
     var manualUpdate by remember { mutableStateOf<UpdateInfo?>(null) }
     var upToDate by remember { mutableStateOf(false) }
     var updateError by remember { mutableStateOf<String?>(null) }
+    val egg = remember { EggController() }
 
     val scrollProgress by remember {
         derivedStateOf {
@@ -198,7 +202,7 @@ fun AboutScreen(
                         },
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    LogoMark(88.dp)
+                    NoteBlockMark(egg, 88.dp)
                     Text(
                         text = "一中帮",
                         fontSize = 35.sp,
@@ -248,6 +252,7 @@ fun AboutScreen(
                     }
                 }
             }
+            EggOverlay(egg)
         }
     }
 
