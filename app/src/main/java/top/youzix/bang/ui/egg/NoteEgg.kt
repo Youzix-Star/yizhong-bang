@@ -24,9 +24,8 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.TransformOrigin
@@ -287,7 +286,7 @@ fun EggOverlay(controller: EggController) {
                     dstOffset = IntOffset((x - side / 2f).roundToInt(), (y - side / 2f).roundToInt()),
                     dstSize = IntSize(dst, dst),
                     alpha = fade,
-                    colorFilter = ColorFilter.tint(Color(n.color), BlendMode.Multiply),
+                    colorFilter = noteTint(n.color),
                     filterQuality = FilterQuality.None,
                 )
             }
@@ -334,6 +333,20 @@ fun EggOverlay(controller: EggController) {
             )
         }
     }
+}
+
+
+/**
+ * 音符染色用 ColorMatrix 只缩放 RGB、保留 alpha：透明的背景保持透明。
+ * 不用 BlendMode.Multiply —— 它的 alpha 公式会把透明像素也涂上颜色。
+ */
+private val noteTints = HashMap<Int, ColorFilter>()
+
+private fun noteTint(argb: Int): ColorFilter = noteTints.getOrPut(argb) {
+    val r = ((argb shr 16) and 0xFF) / 255f
+    val g = ((argb shr 8) and 0xFF) / 255f
+    val b = (argb and 0xFF) / 255f
+    ColorFilter.colorMatrix(ColorMatrix().apply { setToScale(r, g, b, 1f) })
 }
 
 /** 资源解码与缓存；只在 IO 线程或首帧里调用。 */
