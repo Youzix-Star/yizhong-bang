@@ -129,7 +129,8 @@ class EggController {
     fun onTap(density: Float) {
         val t = System.nanoTime()
         if (partyAt != 0L) {
-            stopParty()
+            // 刚开派对时连点的手速容易误触收场，给 0.7 秒缓冲。
+            if (t - partyAt > 700_000_000L) stopParty()
             return
         }
         squashAt = t
