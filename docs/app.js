@@ -34,6 +34,32 @@
     reveals.forEach((el) => el.classList.add("in"));
   }
 
+  // 移动端分页点：跟随滑动高亮，点击由锚点平滑跳转。
+  const pager = document.querySelector(".pager");
+  if (pager) {
+    const dots = Array.from(pager.querySelectorAll("a"));
+    const pages = [document.querySelector(".hero"), ...document.querySelectorAll("main > section:not(.hero)")];
+    let queued = false;
+    const sync = () => {
+      queued = false;
+      if (!window.matchMedia("(max-width: 640px)").matches) return;
+      const mid = window.scrollY + window.innerHeight / 2;
+      let current = 0;
+      pages.forEach((page, i) => {
+        if (page && mid >= page.offsetTop) current = i;
+      });
+      dots.forEach((dot, i) => dot.classList.toggle("on", i === current));
+    };
+    const schedule = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(sync);
+    };
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    sync();
+  }
+
   // 用 GitHub 上的最新 release 校正版本号与下载链接；接口不可用时保留静态内容。
   const API = "https://api.github.com/repos/Youzix-Star/yizhong-bang/releases/latest";
   fetch(API, { headers: { Accept: "application/vnd.github+json" } })
