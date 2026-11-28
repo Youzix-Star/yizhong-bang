@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>一中帮 · 邦邦咔邦</title>
+<meta name="description" content="一中帮是城固一中成绩分析系统的只读 Android 客户端：粘贴链接，自动汇总班级总览、九科对比与答题卡。" />
+<meta name="author" content="邦邦咔邦" />
+<meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0a0c11" media="(prefers-color-scheme: dark)" />
+<link rel="icon" href="assets/icon.png" />
+<meta property="og:title" content="一中帮 · 邦邦咔邦" />
+<meta property="og:description" content="粘贴一条成绩分析链接，班均、级位、偏科和答题卡自动整理好。" />
+<meta property="og:image" content="https://youzix-star.github.io/yizhong-bang/assets/icon.png" />
+<link rel="canonical" href="https://youzix-star.github.io/yizhong-bang/" />
+<link rel="stylesheet" href="styles.css" />
+<noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
+</head>
+<body>
+<div class="backdrop" aria-hidden="true">
+  <div class="glow glow-a"></div>
+  <div class="glow glow-b"></div>
+  <div class="grid"></div>
+</div>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="回到顶部">
+    <img src="assets/icon.png" alt="" width="34" height="34" />
+    <span class="brand-name">一中帮</span>
+    <span class="brand-sub">邦邦咔邦</span>
+  </a>
+  <nav class="nav-links" aria-label="主导航">
+    <a href="#features">特性</a>
+    <a href="#download">下载</a>
+    <a href="#changelog">更新</a>
+    <a href="#about">关于</a>
+  </nav>
+  <a class="nav-gh" href="https://github.com/Youzix-Star/yizhong-bang" target="_blank" rel="noreferrer">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.1-1.47-1.1-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.88 1.52 2.31 1.08 2.87.83.09-.64.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.4 9.4 0 0 1 5 0c1.9-1.29 2.74-1.02 2.74-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>
+    <span>GitHub</span>
+  </a>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="hero-copy reveal">
+      <span class="pill"><span class="dot"></span>v<span data-version>1.0.66</span> · Android 8.0+</span>
+      <h1>一次粘贴，<br /><em>看清</em>整张成绩单。</h1>
+      <p class="lead">一中帮是城固一中成绩分析系统的只读客户端。粘贴链接后，班均、级位、偏科与答题卡会自动整理好，不用再对着表格数格子。</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://github.com/Youzix-Star/yizhong-bang/releases/latest" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4.2-4.2M12 15l-4.2-4.2M4 17v2.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V17"/></svg>
+          下载 APK
+        </a>
+        <a class="btn btn-ghost" href="#download">其他下载源</a>
+      </div>
+      <ul class="meta">
+        <li>只读访问</li>
+        <li>不保存账号</li>
+        <li>开源免费</li>
+      </ul>
+    </div>
+
+    <div class="hero-visual reveal" data-delay="120">
+      <div class="stage-wrap">
+        <div class="icon-stage">
+          <div class="icon-ring"></div>
+          <img class="app-icon" src="assets/icon.png" alt="一中帮应用图标" width="168" height="168" />
+        </div>
+        <div class="chip chip-a"><span>班级均分</span><strong>611.1</strong></div>
+        <div class="chip chip-b"><span>较年级</span><strong class="up">+32.5</strong></div>
+        <div class="chip chip-c"><span>参考人数</span><strong>58</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="features">
+    <div class="section-head reveal">
+      <span class="eyebrow">特性</span>
+      <h2>该有的都有，不该碰的都不碰。</h2>
+      <p>从链接解析到答题卡导出，整条链路只读。数据直接来自学校系统，应用不设中转服务器。</p>
+    </div>
+    <div class="grid-cards">
+      <article class="card reveal">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11.4 4.53"/><path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 0 0 7.07 7.07l1.42-1.42"/></svg></span>
+        <h3>一键解析</h3>
+        <p>粘贴「成绩分析」链接，自动找到「试卷分析」入口，不用在页面上来回点。</p>
+      </article>
+      <article class="card reveal" data-delay="60">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>
+        <h3>班级总览</h3>
+        <p>班均分、年级差值、参考人数、偏科人次，一次算清，首页直接摆出来。</p>
+      </article>
+      <article class="card reveal" data-delay="120">
+        <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18M7 14h4M7 17h7"/></svg></span>
+        <h3>九科对比</h3>
+        <p>本班与年级逐科对照，哪科拖后腿、哪科超平均，柱状图一眼可见。</p>
+      </article>
+      <article class="card reveal" data-delay="180">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></span>
+        <h3>答题卡</h3>
+        <p>按科目翻页、双指缩放；可保存单页，也能把所有科目打包成带说明的 ZIP。</p>
+      </article>
+      <article class="card reveal">
+        <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor" stroke="none"/></svg></span>
+        <h3>主题与质感</h3>
+        <p>跟随系统或手动切换，支持动态取色、纯黑背景，界面组件用的是 OS4 玻璃质感。</p>
+      </article>
+      <article class="card reveal" data-delay="60">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/></svg></span>
+        <h3>示例模式</h3>
+        <p>内置一份脱敏样例，不连学校服务器也能先把所有页面看一遍。</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="download">
+    <div class="section-head reveal">
+      <span class="eyebrow">下载</span>
+      <h2>选一条顺手的线路。</h2>
+      <p>安装包由 GitHub Actions 自动构建，使用固定签名；四个来源内容一致，优先 GitHub。</p>
+    </div>
+    <div class="download-grid">
+      <a class="dl dl-primary reveal" href="https://github.com/Youzix-Star/yizhong-bang/releases/latest" target="_blank" rel="noreferrer">
+        <span class="dl-ico"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.1-1.47-1.1-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.88 1.52 2.31 1.08 2.87.83.09-.64.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.4 9.4 0 0 1 5 0c1.9-1.29 2.74-1.02 2.74-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg></span>
+        <span class="dl-body">
+          <span class="dl-top"><strong>GitHub Releases</strong><span class="tag">推荐</span></span>
+          <span class="dl-desc">最新版 APK 与完整更新日志</span>
+          <span class="dl-meta">v<span data-version>1.0.66</span> · 约 15 MB</span>
+        </span>
+        <span class="dl-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></span>
+      </a>
+
+      <a class="dl reveal" data-delay="60" href="https://wwaya.lanzouv.com/b00zz4gtbc" target="_blank" rel="noreferrer">
+        <span class="dl-ico"><svg viewBox="0 0 24 24"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9.5a4 4 0 0 1-.5 8H7Z"/></svg></span>
+        <span class="dl-body">
+          <span class="dl-top"><strong>蓝奏云</strong></span>
+          <span class="dl-desc">国内直连，适合没有代理的情况</span>
+          <span class="dl-meta">提取码 3oac</span>
+        </span>
+        <span class="dl-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></span>
+      </a>
+
+      <a class="dl reveal" data-delay="120" href="https://share.feijipan.com/s/cwzRCZZk" target="_blank" rel="noreferrer">
+        <span class="dl-ico"><svg viewBox="0 0 24 24"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5v-9Z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/></svg></span>
+        <span class="dl-body">
+          <span class="dl-top"><strong>小飞机云盘</strong></span>
+          <span class="dl-desc">备用线路，长期留存</span>
+          <span class="dl-meta">无需提取码</span>
+        </span>
+        <span class="dl-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></span>
+      </a>
+
+      <a class="dl reveal" data-delay="180" href="https://1819243723.share.123pan.cn/123pan/ugM9jv-gQMTA?pwd=iFun#" target="_blank" rel="noreferrer">
+        <span class="dl-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.2 11 15l4.5-5.5"/></svg></span>
+        <span class="dl-body">
+          <span class="dl-top"><strong>123 云盘</strong></span>
+          <span class="dl-desc">备用线路，速度取决于时段</span>
+          <span class="dl-meta">提取码 iFun</span>
+        </span>
+        <span class="dl-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></span>
+      </a>
+    </div>
+    <p class="fineprint reveal">Android 8.0 及以上。首次启动需要读完并同意免责协议；应用不收集任何账号信息。</p>
+  </section>
+
+  <section class="section" id="changelog">
+    <div class="section-head reveal">
+      <span class="eyebrow">更新</span>
+      <h2>最近改了什么。</h2>
+      <p>完整历史见 GitHub Releases，应用内也能一键检查更新。</p>
+    </div>
+    <ol class="timeline">
+      <li class="reveal">
+        <span class="tl-ver">v1.0.66</span>
+        <div class="tl-card">
+          <div class="tl-head"><strong>品牌与图标</strong><span>2026.11.28</span></div>
+          <ul>
+            <li>关于页版本号右侧改为「邦邦咔邦」</li>
+            <li>引导页换上新的角色图标，副标题同步调整</li>
+          </ul>
+        </div>
+      </li>
+      <li class="reveal" data-delay="60">
+        <span class="tl-ver">v1.0.64</span>
+        <div class="tl-card">
+          <div class="tl-head"><strong>新应用图标</strong><span>2026.11.28</span></div>
+          <ul>
+            <li>桌面图标换成角色立绘，保留原图四周留白</li>
+          </ul>
+        </div>
+      </li>
+      <li class="reveal" data-delay="120">
+        <span class="tl-ver">v1.0.60</span>
+        <div class="tl-card">
+          <div class="tl-head"><strong>音符盒彩蛋</strong><span>2026.11.28</span></div>
+          <ul>
+            <li>关于页的音符盒：点一下 Q 弹并冒出彩色音符</li>
+            <li>连点三下播放《朋友的酒》，三位角色从四周登场</li>
+            <li>修复音符染色把透明背景也涂成色块的问题</li>
+          </ul>
+        </div>
+      </li>
+    </ol>
+    <a class="more reveal" href="https://github.com/Youzix-Star/yizhong-bang/releases" target="_blank" rel="noreferrer">全部更新记录<svg viewBox="0 0 24 24"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></a>
+  </section>
+
+  <section class="section about" id="about">
+    <div class="about-card reveal">
+      <div class="about-copy">
+        <span class="eyebrow">关于</span>
+        <h2>只读、自用、不打扰。</h2>
+        <p>这个工具不代查、不代填，也不修改任何校内数据。登录在学校系统里完成，应用只做只读抓取；没有中转服务器，也不保存账号密码。</p>
+        <p class="muted">与城固一中及任何学校系统没有隶属或合作关系。</p>
+      </div>
+      <dl class="facts">
+        <div><dt>平台</dt><dd>Android 8.0+</dd></div>
+        <div><dt>体积</dt><dd>约 15 MB</dd></div>
+        <div><dt>费用</dt><dd>免费</dd></div>
+        <div><dt>许可</dt><dd>见仓库</dd></div>
+      </dl>
+    </div>
+
+    <div class="faq reveal">
+      <details>
+        <summary>为什么还要自己粘贴链接？</summary>
+        <p>登录在校内系统完成，应用不接触账号密码，只对你给出的成绩分析页面做只读解析。</p>
+      </details>
+      <details>
+        <summary>数据会被上传吗？</summary>
+        <p>不会。成绩只在本机内存里解析和展示，应用没有后端，也不做统计上报。</p>
+      </details>
+      <details>
+        <summary>为什么有四个下载地址？</summary>
+        <p>GitHub 是主渠道；另外三条是给国内网络和备用场景留的，内容完全一致，签名相同。</p>
+      </details>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="assets/icon.png" alt="" width="28" height="28" />
+      <span>邦邦咔邦 · 一中帮</span>
+    </div>
+    <nav aria-label="页脚">
+      <a href="https://github.com/Youzix-Star/yizhong-bang" target="_blank" rel="noreferrer">源码</a>
+      <a href="https://github.com/Youzix-Star/yizhong-bang/blob/main/LICENSE" target="_blank" rel="noreferrer">开源许可</a>
+      <a href="https://github.com/Youzix-Star/yizhong-bang/releases" target="_blank" rel="noreferrer">更新记录</a>
+    </nav>
+    <p class="copyright">2026 邦邦咔邦</p>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24"><path d="M12 19V5m0 0-6 6m6-6 6 6"/></svg>
+</button>
+
+<script src="app.js"></script>
+</body>
+</html>
